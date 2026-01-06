@@ -1,0 +1,85 @@
+<%- include('../partials/header') %>
+
+<div class="admin-dashboard">
+  <div class="dashboard-header">
+    <h1>Admin Dashboard</h1>
+    <p class="subtitle">Manage SI-EVO Voting System</p>
+  </div>
+
+  <div class="stats-grid">
+    <div class="stat-card">
+      <h3>Total Votes</h3>
+      <p class="stat-value">
+        <%= typeof totalVotes !== 'undefined' ? totalVotes : 0 %>
+      </p>
+    </div>
+
+    <div class="stat-card">
+      <h3>Total Voters</h3>
+      <p class="stat-value">
+        <%= typeof totalVoters !== 'undefined' ? totalVoters : 0 %>
+      </p>
+    </div>
+
+    <div class="stat-card">
+      <h3>Voters Participated</h3>
+      <p class="stat-value">
+        <%= typeof votersParticipated !== 'undefined' ? votersParticipated : 0 %>
+      </p>
+    </div>
+
+    <div class="stat-card">
+      <h3>Session Status</h3>
+      <p class="stat-value status">
+        <%= typeof sessionStatus !== 'undefined' ? sessionStatus : 'PREPARATION' %>
+      </p>
+    </div>
+  </div>
+
+  <div class="admin-menu">
+    <h2>Quick Actions</h2>
+    <div class="menu-grid">
+      <a href="/admin/session" class="menu-item">
+        <div class="menu-icon">⚙️</div>
+        <h3>Manage Session</h3>
+        <p>Start, pause, or end voting session</p>
+      </a>
+
+      <a href="/admin/voters" class="menu-item">
+        <div class="menu-icon">👥</div>
+        <h3>Search Voters</h3>
+        <p>Find and manage voter records</p>
+      </a>
+
+      <a href="/admin/audit" class="menu-item">
+        <div class="menu-icon">📋</div>
+        <h3>Audit Logs</h3>
+        <p>View system activity and changes</p>
+      </a>
+
+      <a href="/admin/undo" class="menu-item" onclick="return confirm('Undo last action?')">
+        <div class="menu-icon">↶</div>
+        <h3>Undo Last Action</h3>
+        <p>Revert the most recent change</p>
+      </a>
+    </div>
+  </div>
+
+  <% if (typeof recentActions !== 'undefined' && recentActions && recentActions.length > 0) { %>
+    <div class="recent-activity">
+      <h2>Recent Activity</h2>
+      <ul class="activity-list">
+        <% recentActions.slice(0, 5).forEach(action => { %>
+          <li>
+            <span class="action-time">
+              <%= new Date(action.timestamp).toLocaleString() %>
+            </span>
+            <span class="action-text"><%= action.action %></span>
+          </li>
+        <% }); %>
+      </ul>
+    </div>
+  <% } %>
+</div>
+
+<%- include('../partials/footer') %>

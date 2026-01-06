@@ -1,0 +1,57 @@
+<%- include('../partials/header') %>
+
+<div class="results-container">
+  <div class="results-header">
+    <h1>Voting Results</h1>
+    <p class="session-info">
+      <strong>Session:</strong> <%= typeof session !== 'undefined' && session ? session.title : 'Loading...' %>
+    </p>
+  </div>
+
+  <% if (typeof results !== 'undefined' && results && results.length > 0) { %>
+    <div class="results-list">
+      <% 
+        const totalVotes = results.reduce((sum, r) => sum + r.voteCount, 0);
+        const sortedResults = results.sort((a, b) => b.voteCount - a.voteCount);
+      %>
+      
+      <% sortedResults.forEach((result, index) => { %>
+        <div class="result-item">
+          <div class="rank">
+            <span class="rank-number"><%= index + 1 %></span>
+          </div>
+
+          <div class="result-info">
+            <h3><%= result.candidateName %></h3>
+            <p class="votes-count">Votes: <strong><%= result.voteCount %></strong></p>
+          </div>
+
+          <div class="result-percentage">
+            <% const percentage = totalVotes > 0 ? ((result.voteCount / totalVotes) * 100).toFixed(2) : 0 %>
+            <div class="progress-bar">
+              <div 
+                class="progress-fill" 
+                style="width: <%= percentage %>%"
+              ></div>
+            </div>
+            <span class="percentage-text"><%= percentage %>%</span>
+          </div>
+        </div>
+      <% }); %>
+
+      <div class="results-summary">
+        <p><strong>Total Votes Cast:</strong> <%= totalVotes %></p>
+      </div>
+    </div>
+  <% } else { %>
+    <div class="alert alert-info">
+      No votes have been cast yet.
+    </div>
+  <% } %>
+
+  <!-- <div class="results-actions">
+    <a href="/vote" class="btn btn-secondary">Back to Voting</a>
+  </div> -->
+</div>
+
+<%- include('../partials/footer') %>

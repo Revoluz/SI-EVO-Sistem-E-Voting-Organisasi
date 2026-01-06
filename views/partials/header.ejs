@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title><%= typeof title !== 'undefined' ? title : 'SI-EVO' %></title>
+  <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+  <nav class="navbar">
+    <div class="container">
+      <div class="navbar-brand">SI-EVO</div>
+      <ul class="navbar-menu">
+        <% if (typeof user !== 'undefined' && user) { %>
+          <li><span>Welcome, <%= user.name %></span></li>
+          <li><a href="/logout">Logout</a></li>
+        <% } %>
+      </ul>
+    </div>
+  </nav>
+  <div class="container">

@@ -1,0 +1,99 @@
+<%- include('../partials/header') %>
+
+<div class="vote-container">
+  <div class="vote-header">
+    <h1>Cast Your Vote</h1>
+    <p class="session-info">
+      <strong>Session:</strong> <%= typeof session !== 'undefined' && session ? session.title : 'Loading...' %>
+    </p>
+  </div>
+
+  <div class="candidates-grid">
+    <% if (typeof candidates !== 'undefined' && candidates && candidates.length > 0) { %>
+      <% candidates.forEach(candidate => { %>
+        <div class="candidate-card">
+          <div class="candidate-photo">
+            <% if (candidate.photoUrl) { %>
+              <img src="<%= candidate.photoUrl %>" alt="<%= candidate.name %>">
+            <% } else { %>
+              <div class="photo-placeholder">No Photo</div>
+            <% } %>
+          </div>
+          
+          <div class="candidate-info">
+            <h3><%= candidate.name %></h3>
+            
+            <% if (candidate.vision) { %>
+              <p class="vision">
+                <strong>Vision:</strong> <%= candidate.vision %>
+              </p>
+            <% } %>
+            
+            <% if (candidate.mission) { %>
+              <p class="mission">
+                <strong>Mission:</strong> <%= candidate.mission %>
+              </p>
+            <% } %>
+          </div>
+
+          <button 
+            class="btn btn-success vote-btn" 
+            data-candidate-id="<%= candidate.id %>"
+            data-candidate-name="<%= candidate.name %>"
+          >
+            VOTE
+          </button>
+        </div>
+      <% }); %>
+    <% } else { %>
+      <div class="alert alert-info">
+        No candidates available for this session.
+      </div>
+    <% } %>
+  </div>
+
+  <div class="vote-status">
+    <p id="statusMessage"></p>
+  </div>
+</div>
+
+<script>
+document.querySelectorAll('.vote-btn').forEach(btn => {
+  btn.addEventListener('click', function() {
+    const candidateId = this.getAttribute('data-candidate-id');
+    const candidateName = this.getAttribute('data-candidate-name');
+    
+    // Confirmation dialog
+    if (confirm(`Are you sure you want to vote for ${candidateName}?`)) {
+      // Submit vote
+      fetch('/vote', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ candidateId: parseInt(candidateId) })
+      })
+      .then(response => response.json())
+      .then(data => {
+        if (data.success) {
+          document.getElementById('statusMessage').textContent = '✓ Vote submitted successfully!';
+          document.getElementById('statusMessage').className = 'success';
+          setTimeout(() => {
+            window.location.href = '/results';
+          }, 1500);
+        } else {
+          document.getElementById('statusMessage').textContent = '✗ ' + (data.message || 'Failed to submit vote');
+          document.getElementById('statusMessage').className = 'error';
+        }
+      })
+      .catch(error => {
+        console.error('Error:', error);
+        document.getElementById('statusMessage').textContent = '✗ Error submitting vote';
+        document.getElementById('statusMessage').className = 'error';
+      });
+    }
+  });
+});
+</script>
+
+<%- include('../partials/footer') %>

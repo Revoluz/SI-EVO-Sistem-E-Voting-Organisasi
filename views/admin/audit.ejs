@@ -1,0 +1,108 @@
+<%- include('../partials/header') %>
+
+<div class="admin-audit">
+  <div class="audit-header">
+    <h1>Audit Logs</h1>
+    <p class="subtitle">System Activity & Changes (Linked List Implementation)</p>
+  </div>
+
+  <div class="filter-section">
+    <div class="filter-group">
+      <label for="filterAction">Filter by Action:</label>
+      <select id="filterAction" class="form-control">
+        <option value="">All Actions</option>
+        <option value="LOGIN">Login</option>
+        <option value="VOTE">Vote Submitted</option>
+        <option value="SESSION_START">Session Started</option>
+        <option value="SESSION_END">Session Ended</option>
+        <option value="VOTER_ADDED">Voter Added</option>
+        <option value="CANDIDATE_ADDED">Candidate Added</option>
+        <option value="UNDO">Action Undone</option>
+      </select>
+    </div>
+
+    <button class="btn btn-secondary" onclick="clearFilters()">Clear Filters</button>
+  </div>
+
+  <div class="table-section">
+    <table class="audit-table">
+      <thead>
+        <tr>
+          <th>#</th>
+          <th>Timestamp</th>
+          <th>Action</th>
+          <th>Details</th>
+        </tr>
+      </thead>
+      <tbody id="auditTableBody">
+        <% if (typeof auditLogs !== 'undefined' && auditLogs && auditLogs.length > 0) { %>
+          <% auditLogs.slice().reverse().forEach((log, index) => { %>
+            <tr class="audit-row" data-action="<%= log.action %>">
+              <td><%= index + 1 %></td>
+              <td class="timestamp">
+                <%= new Date(log.timestamp).toLocaleString() %>
+              </td>
+              <td>
+                <span class="action-badge action-<%= log.action.toLowerCase() %>">
+                  <%= log.action %>
+                </span>
+              </td>
+              <td class="details">
+                <details>
+                  <summary>View Details</summary>
+                  <pre><%= log.details %></pre>
+                </details>
+              </td>
+            </tr>
+          <% }); %>
+        <% } else { %>
+          <tr>
+            <td colspan="4" class="text-center">No audit logs found</td>
+          </tr>
+        <% } %>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="audit-stats">
+    <h3>Statistics</h3>
+    <div class="stats-container">
+      <div class="stat">
+        <strong>Total Logs:</strong> <%= typeof auditLogs !== 'undefined' && auditLogs ? auditLogs.length : 0 %>
+      </div>
+      <div class="stat">
+        <strong>Most Recent:</strong>
+        <% if (typeof auditLogs !== 'undefined' && auditLogs && auditLogs.length > 0) { %>
+          <%= new Date(auditLogs[auditLogs.length - 1].timestamp).toLocaleString() %>
+        <% } else { %>
+          N/A
+        <% } %>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+function clearFilters() {
+  document.getElementById('filterAction').value = '';
+  filterAuditLogs();
+}
+
+function filterAuditLogs() {
+  const selectedAction = document.getElementById('filterAction').value;
+  
+  document.querySelectorAll('.audit-row').forEach(row => {
+    const action = row.getAttribute('data-action');
+    
+    if (selectedAction && action !== selectedAction) {
+      row.style.display = 'none';
+    } else {
+      row.style.display = '';
+    }
+  });
+}
+
+document.getElementById('filterAction').addEventListener('change', filterAuditLogs);
+</script>
+
+<%- include('../partials/footer') %>
