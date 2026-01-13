@@ -86,6 +86,8 @@ npm run prisma:generate
 # Run migrations
 npm run prisma:migrate
 ```
+# Run dummy data
+npm run seed
 
 ### 4. Start Server
 
@@ -98,6 +100,8 @@ npm start
 ```
 
 Server will run at `http://localhost:3000`
+Admin will run at `http://localhost:3000/admin/dashboard`
+
 
 ## 📖 Available Scripts
 

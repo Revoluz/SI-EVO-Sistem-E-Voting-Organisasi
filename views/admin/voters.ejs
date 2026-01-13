@@ -54,7 +54,7 @@
               </td>
               <td><%= new Date(voter.createdAt).toLocaleDateString() %></td>
               <td>
-                <button class="btn btn-small btn-info" onclick="viewVoter(<%= voter.id %>)">View</button>
+                <button class="btn btn-small btn-info" onclick="viewVoter('<%= voter.id %>')">View</button>
               </td>
             </tr>
           <% }); %>
