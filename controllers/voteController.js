@@ -1,6 +1,8 @@
 const { PrismaClient } = require('@prisma/client');
 const prisma = new PrismaClient();
 
+let counts = {};
+
 /**
  * Display voting page with candidates
  */
@@ -151,7 +153,9 @@ exports.submitVote = async (req, res) => {
     });
 
     console.log(`✓ Vote submitted - Voter: ${req.session.voterEmail}, Candidate ID: ${candidateId}`);
-
+    counts[candidateId] = (counts[candidateId] || 0) + 1; 
+    console.log(`✓ Real-time Array Updated: Candidate ${candidateId} now has ${counts[candidateId]} votes`);
+    
     res.json({ 
       success: true, 
       message: 'Vote submitted successfully',
@@ -223,7 +227,11 @@ exports.showResults = async (req, res) => {
       voteCount: 0
     }));
 
-    const finalResults = [...results, ...zeroVoteResults];
+    const finalResults = allCandidates.map(c => ({
+  candidateId: c.id,
+  candidateName: c.name,    
+  voteCount: counts[c.id] || 0 
+    }));
 
     console.log(`✓ Results page loaded. Total votes: ${finalResults.reduce((sum, r) => sum + r.voteCount, 0)}`);
 

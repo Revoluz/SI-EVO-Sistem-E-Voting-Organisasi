@@ -37,7 +37,8 @@ router.post('/vote', submitVote);
 
 /**
  * GET /results
- * Display voting results
+ * Fokus: Menampilkan grafik hasil voting.
+ * Logika: Mengambil data angka dari struktur data ARRAY.
  */
 router.get('/results', showResults);
 
