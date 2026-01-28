@@ -8,12 +8,12 @@ let counts = {};
  */
 exports.showVotePage = async (req, res) => {
   try {
-    // 1️⃣ wajib login
+    // login
     if (!req.session.voterId) {
       return res.redirect('/');
     }
 
-    // 2️⃣ cek voter
+    // cek voter
     const voter = await prisma.voter.findUnique({
       where: { id: req.session.voterId }
     });
@@ -22,7 +22,7 @@ exports.showVotePage = async (req, res) => {
       return res.redirect('/results');
     }
 
-    // 3️⃣ ambil session TERAKHIR
+    // ambil session TERAKHIR
     const electionSession = await prisma.electionSession.findFirst({
       orderBy: { id: 'desc' }
     });
@@ -37,12 +37,12 @@ exports.showVotePage = async (req, res) => {
       });
     }
 
-    // 4️⃣ ambil kandidat
+    // ambil kandidat
     const candidates = await prisma.candidate.findMany({
       where: { electionSessionId: electionSession.id }
     });
 
-    // 5️⃣ render SATU KALI SAJA
+    //  render
     return res.render('voter/vote', {
       title: 'Vote - SI-EVO',
       candidates,
@@ -149,7 +149,6 @@ exports.submitVote = async (req, res) => {
       data: { hasVoted: true }
     });
 
-    // 🔥🔥🔥 KERJAAN TEMENMU — ARRAY REAL-TIME (JANGAN DIHAPUS)
     counts[cid] = (counts[cid] || 0) + 1;
     console.log(`✓ Real-time Array Updated: Candidate ${cid} now has ${counts[cid]} votes`);
 
@@ -200,12 +199,11 @@ exports.showResults = async (req, res) => {
       });
     }
 
-    // ambil semua kandidat di session ini  🔥🔥🔥 (INI YANG HILANG TADI)
+
     const allCandidates = await prisma.candidate.findMany({
       where: { electionSessionId: electionSession.id }
     });
 
-    // 🔥 PAKAI ARRAY counts KERJAAN TEMENMU (TIDAK DIHAPUS)
     const finalResults = allCandidates.map(c => ({
       candidateId: c.id,
       candidateName: c.name,
@@ -236,7 +234,7 @@ exports.showResults = async (req, res) => {
   }
 };
 
-// 🔥 FUNGSI RESET ARRAY (UNTUK UNDO ADMIN)
+// FUNGSI RESET ARRAY (UNTUK UNDO ADMIN)
 exports.resetCounts = () => {
   counts = {};
   console.log('↩ Real-time counts array RESET by UNDO');

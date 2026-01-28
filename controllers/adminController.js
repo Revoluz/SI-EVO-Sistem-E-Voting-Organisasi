@@ -244,7 +244,7 @@ exports.undoAction = async (req, res) => {
       data: { status: lastAction.previousStatus }
     });
 
-    // 🔥 JIKA UNDO DARI START_SESSION → ROLLBACK SEMUA VOTING
+    // JIKA UNDO DARI START_SESSION → ROLLBACK SEMUA VOTING
     if (lastAction.action === 'START_SESSION' && lastAction.startTime) {
 
       console.log('↩ UNDO START_SESSION → rollback voting');
@@ -276,7 +276,7 @@ exports.undoAction = async (req, res) => {
         });
       }
 
-      // 🔥 RESET ARRAY REAL-TIME (KERJAAN TEMENMU AMAN)
+      // RESET ARRAY 
       resetCounts();
     }
 
