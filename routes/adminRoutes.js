@@ -2,7 +2,14 @@ const express = require('express');
 const router = express.Router();
 
 // Import controllers
-const { getDashboard, getVoters, getAudit } = require('../controllers/adminController');
+const { 
+  getDashboard, 
+  getVoters, 
+  getAudit,
+  performAction,
+  undoAction
+} = require('../controllers/adminController');
+
 
 /**
  * GET /admin/dashboard
@@ -32,26 +39,12 @@ router.get('/session', (req, res) => {
  * POST /admin/action
  * Perform administrative action
  */
-router.post('/action', (req, res) => {
-  // TODO: Implement performAction controller
-  // - Handle session updates (start, pause, end)
-  // - Add/edit candidates
-  // - Manual vote adjustments
-  // - Log action to AuditLog
-  res.json({ message: 'Admin action - To be implemented' });
-});
-
+router.post('/action', performAction);
 /**
  * GET /admin/undo
  * Undo last action (AVL Tree rebalancing concept)
  */
-router.get('/undo', (req, res) => {
-  // TODO: Implement undoAction controller
-  // - Retrieve last action from AuditLog
-  // - Revert changes
-  // - Update system state
-  res.json({ message: 'Undo action - To be implemented' });
-});
+router.get('/undo', undoAction);
 
 /**
  * GET /admin/audit

@@ -2,6 +2,13 @@ const { PrismaClient } = require('@prisma/client');
 const { skip } = require('@prisma/client/runtime/library');
 const prisma = new PrismaClient();
 const LinkedList = require('../structures/LinkedList');
+const Stack = require('../structures/Stack');
+const { resetCounts } = require('./voteController');
+
+
+// STACK GLOBAL UNTUK SIMPAN RIWAYAT AKSI ADMIN
+const adminActionStack = new Stack();
+
 /**
  * Get all voters
  */
@@ -110,36 +117,37 @@ exports.getAudit = async (req, res) => {
  */
 exports.getDashboard = async (req, res) => {
   try {
-    // Check admin authentication (to be implemented)
-    // if (!req.session.adminId) {
-    //   return res.redirect('/');
-    // }
-
-    // Fetch statistics
+    // total voter
     const totalVoters = await prisma.voter.count();
-    const votersParticipated = await prisma.voter.count({
-      where: { hasVoted: true }
+
+    // ambil session TERAKHIR (bukan cuma ACTIVE)
+    const latestSession = await prisma.electionSession.findFirst({
+      orderBy: { id: 'desc' }
     });
 
-    // Get active session
-    const activeSession = await prisma.electionSession.findFirst({
-      where: { status: 'ACTIVE' }
-    });
+    let sessionStatus = 'PREPARATION';
+    let totalVotes = 0;
+    let votersParticipated = 0;
 
-    // Get total votes
-    const totalVotes = await prisma.vote.count(
-      activeSession ? { where: { electionSessionId: activeSession.id } } : {}
-    );
+    if (latestSession) {
+      sessionStatus = latestSession.status;
 
-    // Get recent audit logs
+      // hitung vote HANYA kalau session ACTIVE
+      if (latestSession.status === 'ACTIVE') {
+        totalVotes = await prisma.vote.count({
+          where: { electionSessionId: latestSession.id }
+        });
+
+        votersParticipated = await prisma.voter.count({
+          where: { hasVoted: true }
+        });
+      }
+    }
+
     const recentActions = await prisma.auditLog.findMany({
       orderBy: { timestamp: 'desc' },
       take: 10
     });
-
-    const sessionStatus = activeSession ? activeSession.status : 'PREPARATION';
-
-    console.log(`✓ Dashboard loaded - Voters: ${totalVoters}, Participated: ${votersParticipated}`);
 
     res.render('admin/dashboard', {
       title: 'Dashboard - SI-EVO Admin',
@@ -149,6 +157,7 @@ exports.getDashboard = async (req, res) => {
       sessionStatus,
       recentActions
     });
+
   } catch (error) {
     console.error('Error loading dashboard:', error);
     res.render('admin/dashboard', {
@@ -157,8 +166,136 @@ exports.getDashboard = async (req, res) => {
       votersParticipated: 0,
       totalVotes: 0,
       sessionStatus: 'ERROR',
-      recentActions: [],
-      errorMessage: 'An error occurred while loading the dashboard'
+      recentActions: []
     });
+  }
+};
+
+
+exports.performAction = async (req, res) => {
+  try {
+    const { type } = req.body;
+
+    // Ambil session terakhir
+    const currentSession = await prisma.electionSession.findFirst({
+      orderBy: { id: 'desc' }
+    });
+
+    if (!currentSession) {
+      return res.redirect('/admin/dashboard');
+    }
+
+    // SIMPAN STATUS LAMA KE STACK (UNTUK UNDO)
+    // SIMPAN STATUS LAMA + WAKTU (UNTUK UNDO TOTAL)
+    adminActionStack.push({
+      sessionId: currentSession.id,
+      previousStatus: currentSession.status,
+      action: type,
+      time: new Date(),              // waktu admin klik
+      startTime: type === 'START_SESSION' ? new Date() : null
+    });
+
+
+
+    let newStatus = currentSession.status;
+
+    if (type === 'START_SESSION') newStatus = 'ACTIVE';
+    if (type === 'PAUSE_SESSION') newStatus = 'PAUSED';
+    if (type === 'END_SESSION') newStatus = 'ENDED';
+
+    // UPDATE STATUS SESSION
+    await prisma.electionSession.update({
+      where: { id: currentSession.id },
+      data: { status: newStatus }
+    });
+
+    // SIMPAN KE AUDIT LOG
+    await prisma.auditLog.create({
+      data: {
+        action: type,
+        details: JSON.stringify({
+          from: currentSession.status,
+          to: newStatus
+        })
+      }
+    });
+
+    console.log(`✓ SESSION CHANGED: ${currentSession.status} → ${newStatus}`);
+
+    res.redirect('/admin/dashboard');
+  } catch (error) {
+    console.error('Error performAction:', error);
+    res.redirect('/admin/dashboard');
+  }
+};
+
+exports.undoAction = async (req, res) => {
+  try {
+    if (adminActionStack.isEmpty()) {
+      console.log('⚠ Tidak ada aksi untuk di-undo');
+      return res.redirect('/admin/dashboard');
+    }
+
+    const lastAction = adminActionStack.pop();
+
+    // BALIKKAN STATUS SESSION
+    await prisma.electionSession.update({
+      where: { id: lastAction.sessionId },
+      data: { status: lastAction.previousStatus }
+    });
+
+    // 🔥 JIKA UNDO DARI START_SESSION → ROLLBACK SEMUA VOTING
+    if (lastAction.action === 'START_SESSION' && lastAction.startTime) {
+
+      console.log('↩ UNDO START_SESSION → rollback voting');
+
+      // ambil semua vote setelah START
+      const votesToDelete = await prisma.vote.findMany({
+        where: {
+          electionSessionId: lastAction.sessionId,
+          votedAt: { gte: lastAction.startTime }
+        }
+      });
+
+      // ambil semua voter yang tadi voting
+      const voterIds = votesToDelete.map(v => v.voterId);
+
+      // hapus vote-vote itu
+      await prisma.vote.deleteMany({
+        where: {
+          electionSessionId: lastAction.sessionId,
+          votedAt: { gte: lastAction.startTime }
+        }
+      });
+
+      // balikin voter.hasVoted = false
+      if (voterIds.length > 0) {
+        await prisma.voter.updateMany({
+          where: { id: { in: voterIds } },
+          data: { hasVoted: false }
+        });
+      }
+
+      // 🔥 RESET ARRAY REAL-TIME (KERJAAN TEMENMU AMAN)
+      resetCounts();
+    }
+
+    // SIMPAN LOG UNDO
+    await prisma.auditLog.create({
+      data: {
+        action: 'UNDO_' + lastAction.action,
+        details: JSON.stringify({
+          backTo: lastAction.previousStatus
+        })
+      }
+    });
+
+    console.log(`↩ UNDO BERHASIL: Session kembali ke ${lastAction.previousStatus}`);
+
+    res.redirect('/admin/dashboard');
+
+  } catch (error) {
+    console.error('Error undoAction:', error);
+    res.redirect('/admin/dashboard');
   }
 };

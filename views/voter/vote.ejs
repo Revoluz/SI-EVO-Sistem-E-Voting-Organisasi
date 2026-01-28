@@ -4,14 +4,16 @@
   <div class="vote-header">
     <h1>Cast Your Vote</h1>
     <p class="session-info">
-      <strong>Session:</strong> <%= typeof session !== 'undefined' && session ? session.title : 'Loading...' %>
+      <strong>Session:</strong>
+      <%= session ? session.title : 'Tidak ada sesi aktif' %>
     </p>
   </div>
 
   <div class="candidates-grid">
-    <% if (typeof candidates !== 'undefined' && candidates && candidates.length > 0) { %>
+    <% if (candidates && candidates.length > 0) { %>
       <% candidates.forEach(candidate => { %>
         <div class="candidate-card">
+
           <div class="candidate-photo">
             <% if (candidate.photoUrl) { %>
               <img src="<%= candidate.photoUrl %>" alt="<%= candidate.name %>">
@@ -19,30 +21,40 @@
               <div class="photo-placeholder">No Photo</div>
             <% } %>
           </div>
-          
+
           <div class="candidate-info">
             <h3><%= candidate.name %></h3>
-            
+
             <% if (candidate.vision) { %>
-              <p class="vision">
-                <strong>Vision:</strong> <%= candidate.vision %>
-              </p>
+              <p><strong>Vision:</strong> <%= candidate.vision %></p>
             <% } %>
-            
+
             <% if (candidate.mission) { %>
-              <p class="mission">
-                <strong>Mission:</strong> <%= candidate.mission %>
-              </p>
+              <p><strong>Mission:</strong> <%= candidate.mission %></p>
             <% } %>
           </div>
 
-          <button 
-            class="btn btn-success vote-btn" 
-            data-candidate-id="<%= candidate.id %>"
-            data-candidate-name="<%= candidate.name %>"
-          >
-            VOTE
-          </button>
+          <!-- 🔥 LOGIKA STATUS YANG BENAR -->
+          <% if (allowVote) { %>
+            <button
+              class="btn btn-primary vote-btn"
+              data-candidate-id="<%= candidate.id %>"
+              data-candidate-name="<%= candidate.name %>"
+            >
+              Submit Vote
+            </button>
+
+          <% } else if (session && session.status === 'PAUSED') { %>
+            <p style="color:orange; font-weight:600; margin-top:15px;">
+              ⏸ Voting sedang dihentikan sementara (PAUSED)
+            </p>
+
+          <% } else if (session && session.status === 'ENDED') { %>
+            <p style="color:red; font-weight:600; margin-top:15px;">
+              ⛔ Voting telah berakhir (ENDED)
+            </p>
+          <% } %>
+
         </div>
       <% }); %>
     <% } else { %>
@@ -59,37 +71,34 @@
 
 <script>
 document.querySelectorAll('.vote-btn').forEach(btn => {
-  btn.addEventListener('click', function() {
-    const candidateId = this.getAttribute('data-candidate-id');
-    const candidateName = this.getAttribute('data-candidate-name');
-    
-    // Confirmation dialog
+  btn.addEventListener('click', function () {
+    const candidateId = this.dataset.candidateId;
+    const candidateName = this.dataset.candidateName;
+
+    if (!candidateId) return;
+
     if (confirm(`Are you sure you want to vote for ${candidateName}?`)) {
-      // Submit vote
       fetch('/vote', {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        },
+        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ candidateId: parseInt(candidateId) })
       })
-      .then(response => response.json())
+      .then(res => res.json())
       .then(data => {
         if (data.success) {
-          document.getElementById('statusMessage').textContent = '✓ Vote submitted successfully!';
-          document.getElementById('statusMessage').className = 'success';
+          document.getElementById('statusMessage').textContent =
+            '✓ Vote submitted successfully!';
           setTimeout(() => {
             window.location.href = '/results';
-          }, 1500);
+          }, 1000);
         } else {
-          document.getElementById('statusMessage').textContent = '✗ ' + (data.message || 'Failed to submit vote');
-          document.getElementById('statusMessage').className = 'error';
+          document.getElementById('statusMessage').textContent =
+            '✗ ' + (data.message || 'Vote failed');
         }
       })
-      .catch(error => {
-        console.error('Error:', error);
-        document.getElementById('statusMessage').textContent = '✗ Error submitting vote';
-        document.getElementById('statusMessage').className = 'error';
+      .catch(() => {
+        document.getElementById('statusMessage').textContent =
+          '✗ Error submitting vote';
       });
     }
   });
