@@ -1,5 +1,5 @@
 class Queue {
-    constructor({maxSize = Infinity} = {}) {
+    constructor(maxSize = 50) {
         this.maxSize = maxSize;
         this.data = [];
         this.enqueuedCount = 0;
