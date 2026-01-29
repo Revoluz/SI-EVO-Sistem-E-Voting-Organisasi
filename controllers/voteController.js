@@ -170,11 +170,26 @@ exports.showResults = async (req, res) => {
       where: { electionSessionId: electionSession.id }
     });
 
+    // hitung vote dari DATABASE
+    const voteCounts = await prisma.vote.groupBy({
+      by: ['candidateId'],
+      where: { electionSessionId: electionSession.id },
+      _count: {
+        candidateId: true
+      }
+    });
+
+    const countMap = {};
+    voteCounts.forEach(v => {
+      countMap[v.candidateId] = v._count.candidateId;
+    });
+
     const finalResults = allCandidates.map(c => ({
       candidateId: c.id,
       candidateName: c.name,
-      voteCount: counts[c.id] || 0
+      voteCount: countMap[c.id] || 0
     }));
+
 
     console.log('✓ Results loaded from array counts');
 
