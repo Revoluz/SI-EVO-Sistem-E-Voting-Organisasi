@@ -63,12 +63,12 @@ exports.getAudit = async (req, res) => {
         // cek dan ambil seluruh request dari audit.ejs
         const {action, adminId, start, end, page = 1 , limit: queryLimit} = req.query;
         // batas data yang ingin ditampilkan jika tidak ada maka 10 dan maksimal 1000 
-        const limit = Math.min(parseInt(queryLimit) || 10, 1000);
+        const limit = Math.min(parseInt(queryLimit) || 10, 20);
         // buat object linkedlist baru
         const list = new LinkedList();
 
         // ambil data dari database dan tambahkan ke object linkedlist
-        const auditLogs = await prisma.auditLog.findMany({ orderBy: { timestamp: 'desc' } });
+        const auditLogs = await prisma.auditLog.findMany({ orderBy:[ { timestamp: 'desc' }, { id: 'desc' } ] });
         auditLogs.forEach(data => list.append(data.adminId, data));
 
         // seleksi sesuai request yang tercipta dari audit.ejs
@@ -91,11 +91,16 @@ exports.getAudit = async (req, res) => {
         let skipCount = (parseInt(page) - 1) * limit;
 
         // Navigasi ke halaman yang tepat dengan tenary operator
-        for (let i = 0; i < skipCount && displayNode !== null; i++) {
+        if (skipCount > 0){
+          for (let i = 0; i < skipCount && displayNode !== null; i++) {
             displayNode = (action || adminId || (start && end) || queryLimit) ? displayNode.tempNext : displayNode.next;
+          }
         }
+        
 
         // kirimkan semua data ke admin/audit.ejs
+        console.log("Node yang dilewati : " + skipCount)
+        console.log("Node start di page sekarang :" + displayNode.id)
         res.render('admin/audit', {
             title: 'Audit Logs - SI-EVO Admin',
             startNode: displayNode,
