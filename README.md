@@ -261,6 +261,47 @@ APP_NAME=SI-EVO
 APP_URL=http://localhost:3000
 ```
 
+## 🧪 Testing & Credentials
+
+### Admin Accounts
+| Username | Email | Password | Role |
+|----------|-------|----------|------|
+| admin1 | admin1@example.com | admin123 | Super Admin |
+| superadmin | superadmin@example.com | admin123 | Super Admin |
+| admin2 | admin2@example.com | admin123 | Super Admin |
+
+**Access Admin Panel**: `http://localhost:3000/admin/login`
+
+### Voter Accounts
+All voter accounts use password: `voter123`
+
+| Name | Email |
+|------|-------|
+| Ahmad Suryanto | ahmad@example.com |
+| Bella Kusuma | bella@example.com |
+| Chandra Wijaya | chandra@example.com |
+| Dina Pratama | dina@example.com |
+| Endra Santoso | endra@example.com |
+| Fara Amelia | fara@example.com |
+| Gita Maharani | gita@example.com |
+| Hendra Kusuma | hendra@example.com |
+| Indra Permana | indra@example.com |
+| Jati Nurwanto | jati@example.com |
+
+**Access Voter Page**: `http://localhost:3000/vote`
+**Access Admin Panel**: `http://localhost:3000/admin/login`
+
+### Election Session
+- **Title**: Pemilihan Ketua BEM 2026
+- **Status**: ACTIVE
+- **Duration**: 3 hours (1 hour started, 2 hours remaining)
+
+### Candidates
+1. **Reza Gunawan** - Membangun organisasi yang inklusif
+2. **Siti Nurdiana** - Menciptakan kampus yang lebih dinamis
+3. **Tri Wirawan** - Mengutamakan aspirasi mahasiswa
+4. **Ulfa Ramadhani** - BEM yang responsif terhadap perubahan zaman
+
 ## 📱 Features (Planned)
 
 - [x] Data structure implementations
