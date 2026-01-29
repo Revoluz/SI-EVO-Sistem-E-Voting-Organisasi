@@ -1,7 +1,7 @@
 const { PrismaClient } = require('@prisma/client');
-const { skip } = require('@prisma/client/runtime/library'); // ⬅️ PUNYA TEMAN, TETAP
+const { skip } = require('@prisma/client/runtime/library'); 
 const prisma = new PrismaClient();
-const LinkedList = require('../structures/LinkedList');      // ⬅️ PUNYA TEMAN
+const LinkedList = require('../structures/LinkedList');      
 const Stack = require('../structures/Stack');
 const { resetCounts } = require('./voteController');
 
