@@ -7,6 +7,10 @@ const path = require('path');
 const publicRoutes = require('./routes/publicRoutes');
 const adminRoutes = require('./routes/adminRoutes');
 
+// Import cache services
+const voterCache = require('./services/voterCacheService');
+const adminCache = require('./services/adminCacheService');
+
 const app = express();
 const PORT = process.env.PORT || 3000;
 
@@ -43,4 +47,8 @@ app.use((err, req, res, next) => {
 // Start Server
 app.listen(PORT, () => {
   console.log(`SI-EVO Server running on http://localhost:${PORT}`);
+  console.log(`[Cache] Voter Cache Service initialized (max 25 users)`);
+  console.log(`[Cache] Voter Stats:`, voterCache.getStats());
+  console.log(`[Cache] Admin Cache Service initialized (max 10 admins)`);
+  console.log(`[Cache] Admin Stats:`, adminCache.getStats());
 });

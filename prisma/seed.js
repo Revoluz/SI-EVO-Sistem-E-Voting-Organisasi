@@ -22,13 +22,25 @@ async function main() {
     prisma.admin.create({
       data: {
         username: 'admin1',
+        email: 'admin1@example.com',
         password: adminPassword,
+        isSuper: true,
       },
     }),
     prisma.admin.create({
       data: {
         username: 'superadmin',
+        email: 'superadmin@example.com',
         password: adminPassword,
+        isSuper: true,
+      },
+    }),
+    prisma.admin.create({
+      data: {
+        username: 'admin2',
+        email: 'admin2@example.com',
+        password: adminPassword,
+        isSuper: false,
       },
     }),
   ]);

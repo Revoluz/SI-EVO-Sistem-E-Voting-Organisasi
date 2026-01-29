@@ -2,8 +2,11 @@
 
 <div class="admin-dashboard">
   <div class="dashboard-header">
-    <h1>Admin Dashboard</h1>
-    <p class="subtitle">Manage SI-EVO Voting System</p>
+    <div class="header-content">
+      <h1>Admin Dashboard</h1>
+      <p class="subtitle">Manage SI-EVO Voting System</p>
+    </div>
+    <a href="/admin/logout" class="logout-btn">🚪 Logout</a>
   </div>
 
   <div class="stats-grid">
@@ -39,6 +42,12 @@
   <div class="admin-menu">
     <h2>Quick Actions</h2>
     <div class="menu-grid">
+      <a href="/admin/management" class="menu-item">
+        <div class="menu-icon">⚙️</div>
+        <h3>Management System</h3>
+        <p>Manage voters, candidates, and admins</p>
+      </a>
+
       <a href="/admin/session" class="menu-item">
         <div class="menu-icon">⚙️</div>
         <h3>Manage Session</h3>

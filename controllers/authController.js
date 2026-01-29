@@ -1,5 +1,6 @@
 const bcrypt = require('bcryptjs');
 const { PrismaClient } = require('@prisma/client');
+const voterCache = require('../services/voterCacheService');
 const prisma = new PrismaClient();
 
 /**
@@ -14,11 +15,14 @@ exports.loginPage = (req, res) => {
 
 /**
  * Process login and create session
+ * Menggunakan BST Cache - cek cache dulu, jika tidak ada baru query DB
  */
 exports.loginProcess = async (req, res) => {
   try {
     const { email, password } = req.body;
-
+    
+    console.log(`🔐 Voter attempting login: ${email}`);
+    console.log(`🔐 Voter attempting login: ${password}`);
     // Validate input
     if (!email || !password) {
       return res.render('voter/login', {
@@ -27,10 +31,9 @@ exports.loginProcess = async (req, res) => {
       });
     }
 
-    // Find voter in database
-    const voter = await prisma.voter.findUnique({
-      where: { email }
-    });
+    // Find voter menggunakan cache service (BST + DB)
+    const voter = await voterCache.findByEmail(email);
+    console.log(voter);
 
     if (!voter) {
       return res.render('voter/login', {
@@ -41,6 +44,7 @@ exports.loginProcess = async (req, res) => {
 
     // Compare passwords
     const passwordMatch = await bcrypt.compare(password, voter.password);
+    console.log(passwordMatch);
 
     if (!passwordMatch) {
       return res.render('voter/login', {
@@ -67,6 +71,7 @@ exports.loginProcess = async (req, res) => {
     });
 
     console.log(`✓ Voter logged in: ${voter.email}`);
+    console.log(voterCache.getStats());
     res.redirect('/vote');
   } catch (error) {
     console.error('Login error:', error);
