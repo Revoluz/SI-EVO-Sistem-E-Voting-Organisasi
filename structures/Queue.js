@@ -17,7 +17,7 @@ class Queue {
         }
     
     dequeue(){
-        if(this.data.length == null){
+        if(this.data.length === 0){
             return null;
         }
 
@@ -47,7 +47,7 @@ class Queue {
     }
 
     peek(){
-        return this.data.length ? null: this.data[0];
+        return this.data.length === 0 ? null: this.data[0];
         
     }
 
