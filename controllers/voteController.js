@@ -117,11 +117,27 @@ exports.submitVote = async (req, res) => {
         votedAt: new Date()
       }
     });
-
+    
     await prisma.voter.update({
       where: { id: req.session.voterId },
       data: { hasVoted: true }
     });
+
+
+    await prisma.auditLog.create({
+      data: {
+        action: 'VOTE',
+        details: JSON.stringify({
+          voterId: req.session.voterId,
+          voterEmail: req.session.voterEmail, 
+          candidateId: cid,
+          sessionId: electionSession.id,
+          timestamp: new Date().toISOString()
+        })
+      }
+    });
+    console.log("BERHASIL MEMASUKKAN VOTE KE LOGS")
+
 
     counts[cid] = (counts[cid] || 0) + 1;
 

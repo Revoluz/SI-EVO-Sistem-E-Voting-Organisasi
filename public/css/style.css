@@ -691,6 +691,7 @@ table tbody tr:last-child td {
   color: white;
 }
 
+.action-admin_login,
 .action-login {
   background-color: var(--info-color);
 }
@@ -699,16 +700,17 @@ table tbody tr:last-child td {
   background-color: var(--success-color);
 }
 
-.action-session_start {
+.action-start_session {
   background-color: var(--warning-color);
   color: #2c3e50;
 }
 
-.action-session_end {
+.action-end_session {
   background-color: var(--danger-color);
 }
 
-.action-voter_added,
+.action-voter_created,
+.action-pause_session,
 .action-candidate_added {
   background-color: var(--primary-color);
 }

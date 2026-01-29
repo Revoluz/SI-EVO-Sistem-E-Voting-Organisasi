@@ -13,11 +13,12 @@
         <option value="" <%= !currentAction ? 'selected' : '' %>>All Actions</option>
         <option value="LOGIN" <%= currentAction === 'LOGIN' ? 'selected' : '' %>>Login</option>
         <option value="VOTE" <%= currentAction === 'VOTE' ? 'selected' : '' %>>Vote Submitted</option>
-        <option value="SESSION_START" <%= currentAction === 'SESSION_START' ? 'selected' : '' %>>Session Started</option>
-        <option value="SESSION_END" <%= currentAction === 'SESSION_END' ? 'selected' : '' %>>Session Ended</option>
-        <option value="VOTER_ADDED" <%= currentAction === 'VOTER_ADDED' ? 'selected' : '' %>>Voter Added</option>
+        <option value="START_SESSION" <%= currentAction === 'START_SESSION' ? 'selected' : '' %>>Session Started</option>
+        <option value="END_SESSION" <%= currentAction === 'END_SESSION' ? 'selected' : '' %>>Session Ended</option>
+        <option value="PAUSE_SESSION" <%= currentAction === 'PAUSE_SESSION' ? 'selected' : '' %>>Pause Session</option>
+        <option value="VOTER_CREATED" <%= currentAction === 'VOTER_CREATED' ? 'selected' : '' %>>Voter Created</option>
         <option value="CANDIDATE_ADDED" <%= currentAction === 'CANDIDATE_ADDED' ? 'selected' : '' %>>Candidate Added</option>
-        <option value="BY ADMIN" <%= currentAction === 'ADMIN ID' ? 'selected' : '' %>>Admin ID</option>  
+        <option value="ADMIN_LOGIN" <%= currentAction === 'ADMIN_LOGIN' ? 'selected' : '' %>>Admin Login</option>  
       </select>
       <br>
       <br>

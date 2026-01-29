@@ -275,7 +275,7 @@ async function main() {
   await Promise.all([
     prisma.auditLog.create({
       data: {
-        action: 'SESSION_START',
+        action: 'START_SESSION',
         details: JSON.stringify({
           sessionId: electionSession.id,
           sessionTitle: electionSession.title,

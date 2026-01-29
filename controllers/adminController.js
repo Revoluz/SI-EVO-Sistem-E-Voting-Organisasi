@@ -62,7 +62,6 @@ exports.getAudit = async (req, res) => {
     let result;
     if (action) result = list.getByAction(action);
     else if (start && end) result = list.getByDateRange(start, end);
-    else if (adminId) result = list.getByAdmin(adminId);
     else if (queryLimit) result = list.getRecent(limit);
     else result = list.getAll();
 

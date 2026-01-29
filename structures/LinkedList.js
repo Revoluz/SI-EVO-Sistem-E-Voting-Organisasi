@@ -53,30 +53,6 @@ class Linkedlist {
         return { startNode: tempHead, total: count };
     }
 
-    getByAdmin(adminId){
-        let tempHead = null;
-        let tempTail = null;
-        let count = 0;
-        let current = this.head;
-
-        while (current !== null) {
-            if (current.admin === adminId) {
-                if (tempHead === null) {
-                    tempHead = tempTail = current;
-                } else {
-                    tempTail.tempNext = current; 
-                    tempTail = current;
-                }
-                count++;
-            }
-                current = current.next;
-        }
-
-        if (tempTail) tempTail.tempNext = null;
-        return { startNode: tempHead, total: count };
-
-    }
-
 
     getRecent(limit){
         let tempHead = null;

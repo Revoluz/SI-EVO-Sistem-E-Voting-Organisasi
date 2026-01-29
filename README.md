@@ -172,7 +172,6 @@ stack.clear()
 ```javascript
 list.append(adminId, action)
 list.getAll()
-list.getByAdmin(adminId)
 list.getByAction(action)
 list.getRecent(limit)
 list.getByDateRange(start, end)
