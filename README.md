@@ -170,7 +170,7 @@ stack.clear()
 
 **Key Methods:**
 ```javascript
-list.append(adminId, action, details)
+list.append(adminId, action)
 list.getAll()
 list.getByAdmin(adminId)
 list.getByAction(action)

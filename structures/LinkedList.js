@@ -6,6 +6,7 @@ class Linkedlist {
     }
 
     append(adminId, data) {
+        console.log("Appending ID:", data.id);
         const newNode = { // Gunakan const
             'id': data.id,
             'admin': adminId,

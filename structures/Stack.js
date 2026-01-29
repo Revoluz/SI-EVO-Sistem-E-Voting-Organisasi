@@ -11,7 +11,7 @@ class Stack {
     this.items.push(action);
   }
 
-  pop() {
+  pop() { 
     return this.items.pop();
   }
 
