@@ -1,7 +1,6 @@
 
 const {PrismaClient} = require('@prisma/client');
 const BinarySearchTree = require('../structures/BSTCache');
-const { _addToCache } = require('../services-lama/voterCacheService');
 const prisma = new PrismaClient();
 
 class VoterCacheService {
