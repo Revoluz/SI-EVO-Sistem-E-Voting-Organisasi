@@ -77,63 +77,38 @@ exports.showVotePage = async (req, res) => {
  */
 exports.submitVote = async (req, res) => {
   try {
-    // ambil session aktif
     const electionSession = await prisma.electionSession.findFirst({
       where: { status: 'ACTIVE' },
       orderBy: { id: 'desc' }
     });
 
     if (!electionSession) {
+      return res.json({ success: false, message: 'Voting tidak tersedia' });
+    }
+
+    if (!req.session.voterId) {
+      return res.json({ success: false, message: 'Not authenticated' });
+    }
+
+    const cid = parseInt(req.body.candidateId);
+    if (!cid) {
+      return res.json({ success: false, message: 'Invalid candidate' });
+    }
+
+    const existingVote = await prisma.vote.findFirst({
+      where: {
+        voterId: req.session.voterId,
+        electionSessionId: electionSession.id
+      }
+    });
+
+    if (existingVote) {
       return res.json({
         success: false,
-        message: 'Voting tidak tersedia. Session belum ACTIVE.'
+        message: 'You have already voted'
       });
     }
 
-    // cek login
-    if (!req.session.voterId) {
-      return res.json({ 
-        success: false, 
-        message: 'Not authenticated' 
-      });
-    }
-
-    // ambil candidateId
-    const { candidateId } = req.body;
-    const cid = parseInt(candidateId);
-
-    if (!cid || isNaN(cid)) {
-      return res.json({ 
-        success: false, 
-        message: 'Invalid candidate ID' 
-      });
-    }
-
-    // cek sudah voting
-    const voter = await prisma.voter.findUnique({
-      where: { id: req.session.voterId }
-    });
-
-    if (voter.hasVoted) {
-      return res.json({ 
-        success: false, 
-        message: 'You have already voted' 
-      });
-    }
-
-    // cek candidate
-    const candidate = await prisma.candidate.findUnique({
-      where: { id: cid }
-    });
-
-    if (!candidate) {
-      return res.json({ 
-        success: false, 
-        message: 'Candidate not found' 
-      });
-    }
-
-    // simpan vote ke database
     const vote = await prisma.vote.create({
       data: {
         voterId: req.session.voterId,
@@ -143,41 +118,32 @@ exports.submitVote = async (req, res) => {
       }
     });
 
-    // update voter
     await prisma.voter.update({
       where: { id: req.session.voterId },
       data: { hasVoted: true }
     });
 
     counts[cid] = (counts[cid] || 0) + 1;
-    console.log(`✓ Real-time Array Updated: Candidate ${cid} now has ${counts[cid]} votes`);
 
-    // audit log (tetap)
-    await prisma.auditLog.create({
-      data: {
-        action: 'VOTE',
-        details: JSON.stringify({
-          voterId: req.session.voterId,
-          candidateId: cid,
-          electionSessionId: electionSession.id
-        })
-      }
-    });
-
-    res.json({ 
-      success: true, 
+    res.json({
+      success: true,
       message: 'Vote submitted successfully',
-      voteId: vote.id 
+      voteId: vote.id
     });
-
   } catch (error) {
-    console.error('Error submitting vote:', error);
-    res.json({ 
-      success: false, 
-      message: 'Server error while submitting vote' 
+    console.error(error);
+    res.json({
+      success: false,
+      message: 'Server error while submitting vote'
     });
   }
 };
+
+exports.resetCounts = () => {
+  counts = {};
+  console.log('↩ Real-time counts array RESET by UNDO');
+};
+
 
 
 /**
@@ -234,8 +200,5 @@ exports.showResults = async (req, res) => {
   }
 };
 
-// FUNGSI RESET ARRAY (UNTUK UNDO ADMIN)
-exports.resetCounts = () => {
-  counts = {};
-  console.log('↩ Real-time counts array RESET by UNDO');
-};
+
+

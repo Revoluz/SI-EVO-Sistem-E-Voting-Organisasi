@@ -1,44 +1,44 @@
-<%- include('../partials/header') %>
+  <%- include('../partials/header') %>
 
 
 
-<div class="session-container">
-  <h1>Manage Election Session</h1>
+  <div class="session-container">
+    <h1>Manage Election Session</h1>
 
-  <div class="session-actions">
-    <!-- START -->
-    <form action="/admin/action" method="POST">
-      <input type="hidden" name="type" value="START_SESSION">
-      <button class="btn btn-start">▶ Start Session</button>
-    </form>
+    <div class="session-actions">
+      <!-- START -->
+      <form action="/admin/action" method="POST">
+        <input type="hidden" name="type" value="START_SESSION">
+        <button class="btn btn-start">▶ Start Session</button>
+      </form>
 
-    <!-- PAUSE -->
-    <form action="/admin/action" method="POST">
-      <input type="hidden" name="type" value="PAUSE_SESSION">
-      <button class="btn btn-pause">⏸ Pause Session</button>
-    </form>
+      <!-- PAUSE -->
+      <form action="/admin/action" method="POST">
+        <input type="hidden" name="type" value="PAUSE_SESSION">
+        <button class="btn btn-pause">⏸ Pause Session</button>
+      </form>
 
-    <!-- END -->
-    <form action="/admin/action" method="POST">
-      <input type="hidden" name="type" value="END_SESSION">
-      <button class="btn btn-end">⏹ End Session</button>
-    </form>
+      <!-- END -->
+      <form action="/admin/action" method="POST">
+        <input type="hidden" name="type" value="END_SESSION">
+        <button class="btn btn-end">⏹ End Session</button>
+      </form>
+    </div>
+
+    <div class="undo-container">
+      <a href="/admin/undo" onclick="return confirm('Undo last action?')" class="btn-undo">
+        ↩ Undo Last Action
+      </a>
+    </div>
+
+    <div class="info-box">
+      <p>Info:</p>
+      <ul>
+        <li><b>Start</b> = buka voting</li>
+        <li><b>Pause</b> = lihat kandidat tapi tidak bisa voting</li>
+        <li><b>End</b> = sesi ditutup permanen</li>
+      </ul>
+    </div>
   </div>
 
-  <div class="undo-container">
-    <a href="/admin/undo" onclick="return confirm('Undo last action?')" class="btn-undo">
-      ↩ Undo Last Action
-    </a>
-  </div>
-
-  <div class="info-box">
-    <p>Info:</p>
-    <ul>
-      <li><b>Start</b> = buka voting</li>
-      <li><b>Pause</b> = lihat kandidat tapi tidak bisa voting</li>
-      <li><b>End</b> = sesi ditutup permanen</li>
-    </ul>
-  </div>
-</div>
-
-<%- include('../partials/footer') %>
+  <%- include('../partials/footer') %>
