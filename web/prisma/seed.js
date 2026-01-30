@@ -40,7 +40,7 @@ async function main() {
         username: 'admin2',
         email: 'admin2@example.com',
         password: adminPassword,
-        isSuper: false,
+        isSuper: true,
       },
     }),
   ]);
@@ -192,83 +192,83 @@ async function main() {
   ]);
   console.log(`✓ Created ${candidates.length} candidates\n`);
 
-  // Create some test Votes
-  console.log('✅ Creating test votes...');
-  const votes = await Promise.all([
-    prisma.vote.create({
-      data: {
-        voterId: voters[0].id,
-        candidateId: candidates[0].id,
-        electionSessionId: electionSession.id,
-      },
-    }),
-    prisma.vote.create({
-      data: {
-        voterId: voters[1].id,
-        candidateId: candidates[1].id,
-        electionSessionId: electionSession.id,
-      },
-    }),
-    prisma.vote.create({
-      data: {
-        voterId: voters[2].id,
-        candidateId: candidates[0].id,
-        electionSessionId: electionSession.id,
-      },
-    }),
-    prisma.vote.create({
-      data: {
-        voterId: voters[3].id,
-        candidateId: candidates[2].id,
-        electionSessionId: electionSession.id,
-      },
-    }),
-    prisma.vote.create({
-      data: {
-        voterId: voters[4].id,
-        candidateId: candidates[0].id,
-        electionSessionId: electionSession.id,
-      },
-    }),
-    prisma.vote.create({
-      data: {
-        voterId: voters[5].id,
-        candidateId: candidates[3].id,
-        electionSessionId: electionSession.id,
-      },
-    }),
-  ]);
-  console.log(`✓ Created ${votes.length} test votes\n`);
+  // // Create some test Votes
+  // console.log('✅ Creating test votes...');
+  // const votes = await Promise.all([
+  //   prisma.vote.create({
+  //     data: {
+  //       voterId: voters[0].id,
+  //       candidateId: candidates[0].id,
+  //       electionSessionId: electionSession.id,
+  //     },
+  //   }),
+  //   prisma.vote.create({
+  //     data: {
+  //       voterId: voters[1].id,
+  //       candidateId: candidates[1].id,
+  //       electionSessionId: electionSession.id,
+  //     },
+  //   }),
+  //   prisma.vote.create({
+  //     data: {
+  //       voterId: voters[2].id,
+  //       candidateId: candidates[0].id,
+  //       electionSessionId: electionSession.id,
+  //     },
+  //   }),
+  //   prisma.vote.create({
+  //     data: {
+  //       voterId: voters[3].id,
+  //       candidateId: candidates[2].id,
+  //       electionSessionId: electionSession.id,
+  //     },
+  //   }),
+  //   prisma.vote.create({
+  //     data: {
+  //       voterId: voters[4].id,
+  //       candidateId: candidates[0].id,
+  //       electionSessionId: electionSession.id,
+  //     },
+  //   }),
+  //   prisma.vote.create({
+  //     data: {
+  //       voterId: voters[5].id,
+  //       candidateId: candidates[3].id,
+  //       electionSessionId: electionSession.id,
+  //     },
+  //   }),
+  // ]);
+  // console.log(`✓ Created ${votes.length} test votes\n`);
 
-  // Update voter hasVoted flags
-  console.log('📝 Updating voter status...');
-  await Promise.all([
-    prisma.voter.update({
-      where: { id: voters[0].id },
-      data: { hasVoted: true },
-    }),
-    prisma.voter.update({
-      where: { id: voters[1].id },
-      data: { hasVoted: true },
-    }),
-    prisma.voter.update({
-      where: { id: voters[2].id },
-      data: { hasVoted: true },
-    }),
-    prisma.voter.update({
-      where: { id: voters[3].id },
-      data: { hasVoted: true },
-    }),
-    prisma.voter.update({
-      where: { id: voters[4].id },
-      data: { hasVoted: true },
-    }),
-    prisma.voter.update({
-      where: { id: voters[5].id },
-      data: { hasVoted: true },
-    }),
-  ]);
-  console.log(`✓ Updated voter voting status\n`);
+  // // Update voter hasVoted flags
+  // console.log('📝 Updating voter status...');
+  // await Promise.all([
+  //   prisma.voter.update({
+  //     where: { id: voters[0].id },
+  //     data: { hasVoted: true },
+  //   }),
+  //   prisma.voter.update({
+  //     where: { id: voters[1].id },
+  //     data: { hasVoted: true },
+  //   }),
+  //   prisma.voter.update({
+  //     where: { id: voters[2].id },
+  //     data: { hasVoted: true },
+  //   }),
+  //   prisma.voter.update({
+  //     where: { id: voters[3].id },
+  //     data: { hasVoted: true },
+  //   }),
+  //   prisma.voter.update({
+  //     where: { id: voters[4].id },
+  //     data: { hasVoted: true },
+  //   }),
+  //   prisma.voter.update({
+  //     where: { id: voters[5].id },
+  //     data: { hasVoted: true },
+  //   }),
+  // ]);
+  // console.log(`✓ Updated voter voting status\n`);
 
   // Create Audit Logs
   console.log('📋 Creating audit logs...');
@@ -311,7 +311,7 @@ async function main() {
   console.log(`   - Admin users: ${admins.length}`);
   console.log(`   - Voters: ${voters.length}`);
   console.log(`   - Candidates: ${candidates.length}`);
-  console.log(`   - Votes: ${votes.length}`);
+  // console.log(`   - Votes: ${votes.length}`);
   console.log(`   - Election Sessions: 1\n`);
 
   console.log('🔑 Login Credentials for Testing:');

@@ -1,20 +1,302 @@
 [
   {
     "id": 1,
-    "name": "Budi Santoso",
+    "name": "Reza Gunawan",
     "voterId": "001",
-    "voted": false
+    "voted": true
   },
   {
     "id": 2,
-    "name": "Siti Nurhaliza",
+    "name": "Yana Kristina",
     "voterId": "002",
-    "voted": false
+    "voted": true
   },
   {
     "id": 3,
-    "name": "Ahmad Rahman",
+    "name": "Mustafa Karim",
     "voterId": "003",
+    "voted": true
+  },
+  {
+    "id": 4,
+    "name": "Citra Dewi",
+    "voterId": "004",
+    "voted": true
+  },
+  {
+    "id": 5,
+    "name": "Hafidh Syaiful",
+    "voterId": "005",
+    "voted": true
+  },
+  {
+    "id": 6,
+    "name": "Qorry Mustoffa",
+    "voterId": "006",
+    "voted": false
+  },
+  {
+    "id": 7,
+    "name": "Bella Harmoni",
+    "voterId": "007",
+    "voted": false
+  },
+  {
+    "id": 8,
+    "name": "Tri Wirawan",
+    "voterId": "008",
+    "voted": false
+  },
+  {
+    "id": 9,
+    "name": "Desi Irawan",
+    "voterId": "009",
+    "voted": false
+  },
+  {
+    "id": 10,
+    "name": "Yuki Tanaka",
+    "voterId": "010",
+    "voted": false
+  },
+  {
+    "id": 11,
+    "name": "Gregorius Dedi",
+    "voterId": "011",
+    "voted": false
+  },
+  {
+    "id": 12,
+    "name": "Budi Santoso",
+    "voterId": "012",
+    "voted": false
+  },
+  {
+    "id": 13,
+    "name": "Lia Paramita",
+    "voterId": "013",
+    "voted": false
+  },
+  {
+    "id": 14,
+    "name": "Wayan Suparta",
+    "voterId": "014",
+    "voted": false
+  },
+  {
+    "id": 15,
+    "name": "Eka Putri",
+    "voterId": "015",
+    "voted": false
+  },
+  {
+    "id": 16,
+    "name": "Sandi Rahman",
+    "voterId": "016",
+    "voted": false
+  },
+  {
+    "id": 17,
+    "name": "Jefri Makabraw",
+    "voterId": "017",
+    "voted": false
+  },
+  {
+    "id": 18,
+    "name": "Ormala Pratiwi",
+    "voterId": "018",
+    "voted": false
+  },
+  {
+    "id": 19,
+    "name": "Fitri Utama",
+    "voterId": "019",
+    "voted": false
+  },
+  {
+    "id": 20,
+    "name": "Ahmad Rahman",
+    "voterId": "020",
+    "voted": false
+  },
+  {
+    "id": 21,
+    "name": "Cahya Nugroho",
+    "voterId": "021",
+    "voted": false
+  },
+  {
+    "id": 22,
+    "name": "Nadia Wijaya",
+    "voterId": "022",
+    "voted": false
+  },
+  {
+    "id": 23,
+    "name": "Zulfikar Pratama",
+    "voterId": "023",
+    "voted": false
+  },
+  {
+    "id": 24,
+    "name": "Indah Sari",
+    "voterId": "024",
+    "voted": false
+  },
+  {
+    "id": 25,
+    "name": "Vella Simanjuntak",
+    "voterId": "025",
+    "voted": false
+  },
+  {
+    "id": 26,
+    "name": "Gina Lestari",
+    "voterId": "026",
+    "voted": false
+  },
+  {
+    "id": 27,
+    "name": "Usman Efendi",
+    "voterId": "027",
+    "voted": false
+  },
+  {
+    "id": 28,
+    "name": "Maya Kusuma",
+    "voterId": "028",
+    "voted": false
+  },
+  {
+    "id": 29,
+    "name": "Putra Wijaya",
+    "voterId": "029",
+    "voted": false
+  },
+  {
+    "id": 30,
+    "name": "Xenia Hermawan",
+    "voterId": "030",
+    "voted": false
+  },
+  {
+    "id": 31,
+    "name": "Eka Wardana",
+    "voterId": "031",
+    "voted": false
+  },
+  {
+    "id": 32,
+    "name": "Karina Mustika",
+    "voterId": "032",
+    "voted": false
+  },
+  {
+    "id": 33,
+    "name": "Taufan Hidayat",
+    "voterId": "033",
+    "voted": false
+  },
+  {
+    "id": 34,
+    "name": "Dina Rahmawati",
+    "voterId": "034",
+    "voted": false
+  },
+  {
+    "id": 35,
+    "name": "Siti Nurhaliza",
+    "voterId": "035",
+    "voted": false
+  },
+  {
+    "id": 36,
+    "name": "Oki Pratama",
+    "voterId": "036",
+    "voted": false
+  },
+  {
+    "id": 37,
+    "name": "Koko Suryanto",
+    "voterId": "037",
+    "voted": false
+  },
+  {
+    "id": 38,
+    "name": "Vina Marlina",
+    "voterId": "038",
+    "voted": false
+  },
+  {
+    "id": 39,
+    "name": "Agus Setiawan",
+    "voterId": "039",
+    "voted": false
+  },
+  {
+    "id": 40,
+    "name": "Nur Azizah",
+    "voterId": "040",
+    "voted": false
+  },
+  {
+    "id": 41,
+    "name": "Isa Yulianti",
+    "voterId": "041",
+    "voted": false
+  },
+  {
+    "id": 42,
+    "name": "Fajar Pratama",
+    "voterId": "042",
+    "voted": false
+  },
+  {
+    "id": 43,
+    "name": "Laksmi Handoko",
+    "voterId": "043",
+    "voted": false
+  },
+  {
+    "id": 44,
+    "name": "Joko Supriyanto",
+    "voterId": "044",
+    "voted": false
+  },
+  {
+    "id": 45,
+    "name": "Ulfa Ramadhani",
+    "voterId": "045",
+    "voted": false
+  },
+  {
+    "id": 46,
+    "name": "Puri Handayani",
+    "voterId": "046",
+    "voted": false
+  },
+  {
+    "id": 47,
+    "name": "Haris Wijaya",
+    "voterId": "047",
+    "voted": false
+  },
+  {
+    "id": 48,
+    "name": "Rani Kusuma",
+    "voterId": "048",
+    "voted": false
+  },
+  {
+    "id": 49,
+    "name": "Widi Harjanto",
+    "voterId": "049",
+    "voted": false
+  },
+  {
+    "id": 50,
+    "name": "Zena Kusuma",
+    "voterId": "050",
     "voted": false
   }
 ]

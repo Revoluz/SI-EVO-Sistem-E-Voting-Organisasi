@@ -1,5 +1,8 @@
 const { showMessage, getNumberInput, getInput, showSuccess, showError } = require('../utils/input');
 const { readJSON, writeJSON } = require('../utils/fileHandler');
+const BinarySearchTree = require('../../structure/BSTCache');
+
+let voterBST = null;
 
 const clearScreen = () => {
   console.clear();
@@ -22,7 +25,8 @@ const showCandidates = () => {
   } else {
     candidates.forEach((candidate, index) => {
       showMessage(`${index + 1}. ${candidate.name}`);
-      showMessage(`   ${candidate.description}`);
+      showMessage(`Visi : ${candidate.vision}`);
+      showMessage(`Misi : ${candidate.mission}`);
       showMessage('');
     });
   }
@@ -47,7 +51,9 @@ const voting = () => {
   showMessage('');
 
   const voters = readJSON('voters.json');
-  const voter = voters.find(v => v.voterId === voterId && v.name === voterName);
+  const voter = voterBST.searchNameAndPassword(voterName, voterId);
+  
+  // const voter = voters.find(v => v.voterId === voterId && v.name === voterName);
 
   if (!voter) {
     showError('ID/NIM atau Nama tidak ditemukan!');
@@ -60,6 +66,7 @@ const voting = () => {
     getInput('Tekan Enter untuk lanjut...');
     return;
   }
+  console.log(voter.voted);
 
   // Tampilkan kandidat
   const candidates = readJSON('candidates.json');
@@ -74,7 +81,8 @@ const voting = () => {
   showMessage('');
   candidates.forEach((candidate, index) => {
     showMessage(`${index + 1}. ${candidate.name}`);
-    showMessage(`   ${candidate.description}`);
+    showMessage(`Visi : ${candidate.vision}`);
+    showMessage(`Misi : ${candidate.mission}`);
     showMessage('');
   });
 
@@ -97,10 +105,12 @@ const voting = () => {
     getInput('Tekan Enter untuk lanjut...');
     return;
   }
+  console.log(voters);
+  console.log(voter);
 
   // Update vote
   candidates[candidateIndex].votes += 1;
-  voter.voted = true;
+  voters[voter.userId-1].voted = true;
 
   // Simpan data
   writeJSON('candidates.json', candidates);
@@ -121,10 +131,27 @@ const voting = () => {
   getInput('Tekan Enter untuk lanjut...');
 };
 
+
+const initializeVoterBST = () => {
+  if (voterBST === null) {
+    voterBST = new BinarySearchTree();
+    const voters = readJSON('voters.json');
+    voters.forEach(voter => {
+      voterBST.insert(voter.id, voter.name, voter.voterId);
+    });
+    voterBST.getStats();
+  }
+}
+
+
+
+
 /**
  * Menu Voter
  */
 const voterMenu = () => {
+  initializeVoterBST();
+
   while (true) {
     clearScreen();
     showMessage('╔════════════════════════════════════════╗');

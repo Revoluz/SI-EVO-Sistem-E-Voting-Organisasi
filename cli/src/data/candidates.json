@@ -1,14 +1,30 @@
 [
   {
     "id": 1,
-    "name": "sdafsa",
-    "description": "asfsd",
-    "votes": 0
+    "name": "Reza Gunawan",
+    "vision": "Membangun organisasi yang inklusif dan mengutamakan kesejahteraan mahasiswa",
+    "mission": "Meningkatkan partisipasi mahasiswa, memperbaiki fasilitas kampus, dan memperkuat hubungan dengan industri",
+    "votes": 1
   },
   {
     "id": 2,
-    "name": "saf",
-    "description": "asd",
+    "name": "Siti Nurdiana",
+    "vision": "Menciptakan kampus yang lebih dinamis dan inovatif",
+    "mission": "Mengembangkan program kegiatan, meningkatkan transparansi, dan memberdayakan mahasiswa",
     "votes": 0
+  },
+  {
+    "id": 3,
+    "name": "Tri Wirawan",
+    "vision": "Mengutamakan aspirasi dan kebutuhan mahasiswa dalam setiap keputusan",
+    "mission": "Memperkuat advokasi mahasiswa, meningkatkan akses informasi, dan membangun kepercayaan",
+    "votes": 4
+  },
+  {
+    "id": 4,
+    "name": "Ulfa Ramadhani",
+    "vision": "BEM yang responsif terhadap perubahan zaman dan kebutuhan mahasiswa",
+    "mission": "Mengintegrasikan teknologi, meningkatkan kualitas program, dan menjadi jembatan komunikasi",
+    "votes": 5
   }
 ]

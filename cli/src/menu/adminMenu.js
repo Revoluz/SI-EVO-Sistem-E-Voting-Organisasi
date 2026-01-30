@@ -1,10 +1,11 @@
 const { showMessage, getNumberInput, getInput, showSuccess, showError } = require('../utils/input');
 const { readJSON, writeJSON } = require('../utils/fileHandler');
-
+const BinarySearchTree = require('../../structure/BSTCache');
 const clearScreen = () => {
   console.clear();
 };
-
+let adminBST = null;
+let voterBST = null;
 /**
  * Menampilkan statistik voting
  */
@@ -25,7 +26,8 @@ const showStatistics = () => {
     showMessage('─'.repeat(40));
     candidates.forEach((candidate, index) => {
       showMessage(`${index + 1}. ${candidate.name} - ${candidate.votes} suara`);
-      showMessage(`   ${candidate.description}`);
+      showMessage(`Visi : ${candidate.vision}`);
+      showMessage(`Misi : ${candidate.mission}`);
     });
   }
 
@@ -61,12 +63,14 @@ const manageCandidate = () => {
     case 1: // Tambah Kandidat
       showMessage('─── Tambah Kandidat ───');
       const name = getInput('Nama kandidat: ');
-      const description = getInput('Deskripsi: ');
+      const vision = getInput("Visi: ");
+      const mission = getInput("Misi: ");
 
       const newCandidate = {
         id: candidates.length + 1,
         name,
-        description,
+        vision,
+        mission,
         votes: 0
       };
 
@@ -87,7 +91,8 @@ const manageCandidate = () => {
       } else {
         candidates.forEach((candidate, index) => {
           showMessage(`${index + 1}. ${candidate.name}`);
-          showMessage(`   ${candidate.description}`);
+          showMessage(`   Visi: ${candidate.vision}`);
+          showMessage(`   Misi: ${candidate.mission}`);
         });
       }
       showMessage('');
@@ -176,16 +181,26 @@ const manageVoter = () => {
       break;
 
     case 2: // Lihat Semua Voter
+      const votersTree = initializeVoterBST();
+      const allVoters = voterBST.getAll();
       showMessage('─── Daftar Voter ───');
-      if (voters.length === 0) {
+      if (allVoters.length === 0) {
         showMessage('Belum ada voter.');
       } else {
-        voters.forEach((voter, index) => {
+        showMessage(`📊 Total Voter: ${allVoters.length}`);
+        showMessage(`🌳 Tree Height: ${votersTree.getHeight()}`);
+        showMessage("─".repeat(60));
+        allVoters.forEach((voter, index) => {
           const status = voter.voted ? '✅ Sudah voting' : '❌ Belum voting';
-          showMessage(`${index + 1}. ${voter.name} (${voter.voterId}) - ${status}`);
+      showMessage(
+        `${index + 1}. ${voter.name} (ID: ${voter.userId}, NIM: ${voter.password}) - ${status}`,
+      );
         });
       }
       showMessage('');
+      showMessage("📈 Visualisasi BST Tree:");
+      showMessage(votersTree.toString());
+      showMessage("");
       getInput('Tekan Enter untuk lanjut...');
       manageVoter();
       break;
@@ -267,13 +282,70 @@ const resetVoting = () => {
 };
 
 /**
+ * Inisialisasi BST dengan data admin dari admin.json
+ */
+const initializeAdminBST = () => {
+  if (adminBST === null) {
+    adminBST = new BinarySearchTree();
+    const admins = readJSON('admin.json');
+    admins.forEach(admin => {
+      adminBST.insert(admin.id, admin.username, admin.password);
+    });
+    adminBST.getStats();
+  }
+}
+const initializeVoterBST = () => {
+  if (voterBST === null) {
+    voterBST = new BinarySearchTree();
+    const voters = readJSON('voters.json');
+    voters.forEach(voter => {
+      // Kita simpan data lengkap voter di dalam BST dengan name sebagai key
+      voterBST.insert(voter.id, voter.name, voter.voterId, voter.voted);
+    });
+  }
+  return voterBST;
+};
+
+const loginAdmin = () => {
+  clearScreen();
+    showMessage("╔════════════════════════════════════════╗");
+    showMessage("║      LOGIN ADMIN                       ║");
+    showMessage("╚════════════════════════════════════════╝");
+    showMessage("");
+  // Inisialisasi BST jika belum
+  initializeAdminBST();
+
+    showMessage(`📊 BST Tree `);
+    showMessage(adminBST.toString());
+    showMessage("");
+
+    const username = getInput("Masukkan username: ");
+    const password = getInput("Masukkan password: ");
+
+    const adminNode = adminBST.search(username);
+    if (adminNode && adminNode.password === password) {
+      showSuccess("Login berhasil!");
+      getInput("Tekan Enter untuk lanjut...");
+      return true;
+    } else {
+      showError("Username atau password salah!");
+      getInput("Tekan Enter untuk kembali...");
+      return false;
+    }
+}
+
+/**
  * Menu Admin
  */
 const adminMenu = () => {
+  if (!loginAdmin()) {
+    return;
+  }
   while (true) {
+
     clearScreen();
     showMessage('╔════════════════════════════════════════╗');
-    showMessage('║      MENU ADMIN                       ║');
+    showMessage('║      MENU ADMIN                        ║');
     showMessage('╚════════════════════════════════════════╝');
     showMessage('');
     showMessage('  1. Kelola Kandidat');

@@ -78,4 +78,4 @@ class VoterCacheService {
 
 
 
-module.exports = new VoterCacheService(2);
+module.exports = new VoterCacheService(25);

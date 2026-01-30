@@ -17,25 +17,23 @@ const startWorker = () => {
         if (voteQueue.size() > 0 && !processing) {
             processing = true;
 
-            // Log current queue status and next item's schedule (best-effort)
-            try {
-                const next = voteQueue.peek();
-                const stats = voteQueue.getStats();
-                if (next) {
-                    console.log('[VoteWorker] queue size', stats.size, 'next position', next.position, 'processAfter', new Date(next.processAfter).toISOString());
-                } else {
-                    console.log('[VoteWorker] queue size', stats.size, 'no peek item');
-                }
-            } catch (e) {
-                // ignore logging errors
-            }
+            const stats = voteQueue.getStats();
+            console.log('\n📊 SEBELUM DEQUEUE');
+            console.log('   Queue Size:', stats.size);
+            console.log('   Queue Array:', JSON.stringify(voteQueue.data, null, 2));
 
             // wait 5 seconds before dequeuing to make the queue visible to users
             const preDequeueMs = 10000;
-            console.log('[VoteWorker] queue non-empty, waiting', preDequeueMs, 'ms before dequeuing');
+            console.log(`\n⏳ Menunggu ${preDequeueMs}ms sebelum dequeue...\n`);
             await sleep(preDequeueMs);
 
+            console.log('📤 DEQUEUING 5 VOTES...');
             const votesToProcess = voteQueue.dequeueBatch(5);
+            
+            console.log('✅ SETELAH DEQUEUE');
+            console.log('   Votes diambil:', votesToProcess.length);
+            console.log('   Queue Array:', JSON.stringify(voteQueue.data, null, 2));
+            console.log('   Queue Size:', voteQueue.size());
             
             for (const vote of votesToProcess) {
                 try {
@@ -49,28 +47,23 @@ const startWorker = () => {
                     });
 
                     // Log inserted vote payload and current queue internal array
-                    console.log('Suara berhasil diproses:', JSON.stringify({
+                    console.log('💾 Suara berhasil disimpan ke DB:', JSON.stringify({
                         voterId: vote.voterId,
                         candidateId: vote.candidateId,
                         electionSessionId: vote.electionSessionId
                     }));
 
-                    try {
-                        // Access internal queue array for debugging (best-effort)
-                        console.log('[VoteWorker] current queue array (internal):', JSON.stringify(voteQueue.data));
-                    } catch (e) {
-                        console.log('[VoteWorker] current queue array: <unavailable>');
-                    }
                 } catch (err) {
                     // handle duplicate or constraint errors gracefully
                     if (err.code === 'P2002') {
                         // unique constraint violation (voter already has a vote for this session)
-                        console.warn(`Vote already exists for voterId=${vote.voterId} session=${vote.electionSessionId}`);
+                        console.warn(`⚠️  Vote sudah ada untuk voterId=${vote.voterId} session=${vote.electionSessionId}`);
                     } else {
-                        console.error('Gagal memproses suara:', err);
+                        console.error('❌ Gagal memproses suara:', err);
                     }
                 }
             }
+            console.log('');
             processing = false;
         }
     }, 2000); 

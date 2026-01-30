@@ -3,9 +3,9 @@
 <div class="results-container">
   <div class="results-header">
     <h1>Voting Results</h1>
-    <p class="session-info">
+    <h2 >
       <strong>Session:</strong> <%= typeof session !== 'undefined' && session ? session.title : 'Loading...' %>
-    </p>
+    </h2>
   </div>
 
   <% if (typeof results !== 'undefined' && results && results.length > 0) { %>

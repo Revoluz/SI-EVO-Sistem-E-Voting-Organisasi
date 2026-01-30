@@ -71,7 +71,7 @@ exports.loginProcess = async (req, res) => {
     });
 
     console.log(`✓ Voter logged in: ${voter.email}`);
-    console.log(voterCache.getStats());
+    console.log(voterCache.bstByEmail.toString());
     res.redirect('/vote');
   } catch (error) {
     console.error('Login error:', error);
