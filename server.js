@@ -10,6 +10,7 @@ const adminRoutes = require('./routes/adminRoutes');
 // Import cache services
 const voterCache = require('./services/voterCacheService');
 const adminCache = require('./services/adminCacheService');
+const { startWorker } = require('./workers/voteWorkers');
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -52,3 +53,6 @@ app.listen(PORT, () => {
   console.log(`[Cache] Admin Cache Service initialized (max 10 admins)`);
   console.log(`[Cache] Admin Stats:`, adminCache.getStats());
 });
+
+startWorker();
+

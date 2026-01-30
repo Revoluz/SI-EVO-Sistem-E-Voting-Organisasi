@@ -95,6 +95,18 @@ exports.submitVote = async (req, res) => {
       return res.json({ success: false, message: 'Invalid candidate' });
     }
 
+    const voterRecord = await prisma.voter.findUnique({ where : { id: req.session.voterId } });
+    if (voterRecord?.hasVoted) {
+      return res.json({ success: false, message: 'You have already voted' });
+    }
+
+    const payload = {
+      voterId: req.session.voterId,
+      candidateId: cid,
+      electionSessionId: electionSession.id
+    };
+
+    // Prevent double votes by checking DB first
     const existingVote = await prisma.vote.findFirst({
       where: {
         voterId: req.session.voterId,
@@ -103,48 +115,44 @@ exports.submitVote = async (req, res) => {
     });
 
     if (existingVote) {
-      return res.json({
-        success: false,
-        message: 'You have already voted'
-      });
+      return res.json({ success: false, message: 'You have already voted' });
     }
 
-    const vote = await prisma.vote.create({
-      data: {
-        voterId: req.session.voterId,
-        candidateId: cid,
-        electionSessionId: electionSession.id,
-        votedAt: new Date()
-      }
-    });
-    
+    const voteQueueService = require('../services/voteQueue');
+    const enqueueResult = voteQueueService.enqueue(payload, 5000);
+    if (!enqueueResult) {
+      return res.json({ success: false, message: 'Vote queue is full. Please try again later.' });
+    }
+
+    // Mark voter as having voted immediately so they can't re-submit while in queue
     await prisma.voter.update({
       where: { id: req.session.voterId },
       data: { hasVoted: true }
     });
 
-
+    // Log that the vote was queued (will be processed by worker after delay)
     await prisma.auditLog.create({
       data: {
-        action: 'VOTE',
+        action: 'VOTE_QUEUED',
         details: JSON.stringify({
           voterId: req.session.voterId,
-          voterEmail: req.session.voterEmail, 
+          voterEmail: req.session.voterEmail,
           candidateId: cid,
           sessionId: electionSession.id,
+          position: enqueueResult.position,
+          processAfter: new Date(enqueueResult.processAfter).toISOString(),
           timestamp: new Date().toISOString()
         })
       }
     });
-    console.log("BERHASIL MEMASUKKAN VOTE KE LOGS")
 
-
-    counts[cid] = (counts[cid] || 0) + 1;
-
+    // Respond with queue position and estimated wait time
+    const etaMs = Math.max(0, enqueueResult.processAfter - Date.now());
     res.json({
       success: true,
-      message: 'Vote submitted successfully',
-      voteId: vote.id
+      message: 'Vote queued successfully',
+      position: enqueueResult.position,
+      etaMs
     });
   } catch (error) {
     console.error(error);

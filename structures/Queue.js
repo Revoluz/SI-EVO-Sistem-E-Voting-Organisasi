@@ -11,6 +11,8 @@ class Queue {
             return false;
         }
 
+        // push into internal array (simple queue)
+        
         this.data[this.data.length] = vote;
         this.enqueuedCount++;
         return true;
@@ -65,3 +67,5 @@ class Queue {
         }
     }
 }
+
+module.exports = new Queue();

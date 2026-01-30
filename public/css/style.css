@@ -717,10 +717,12 @@ table tbody tr:last-child td {
   color: #2c3e50;
 }
 
+.action-voter_deleted,
 .action-end_session {
   background-color: var(--danger-color);
 }
 
+.action-vote_queued,
 .action-voter_created,
 .action-pause_session,
 .action-candidate_added {
