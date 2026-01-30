@@ -1,0 +1,20 @@
+[
+  {
+    "id": 1,
+    "name": "Budi Santoso",
+    "voterId": "001",
+    "voted": false
+  },
+  {
+    "id": 2,
+    "name": "Siti Nurhaliza",
+    "voterId": "002",
+    "voted": false
+  },
+  {
+    "id": 3,
+    "name": "Ahmad Rahman",
+    "voterId": "003",
+    "voted": false
+  }
+]

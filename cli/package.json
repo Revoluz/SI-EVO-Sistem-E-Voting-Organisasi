@@ -1,0 +1,20 @@
+{
+  "name": "si-evo-voting-cli",
+  "version": "1.0.0",
+  "description": "Sistem E-Voting Organisasi berbasis CLI Node.js",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js",
+    "dev": "node index.js"
+  },
+  "keywords": [
+    "voting",
+    "cli",
+    "nodejs"
+  ],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "prompt-sync": "^4.2.0"
+  }
+}
