@@ -696,8 +696,20 @@ table tbody tr:last-child td {
   background-color: var(--info-color);
 }
 
-.action-vote {
+.action-vote,
+.action-vote_submitted 
+{
   background-color: var(--success-color);
+}
+
+.action-undo_start_session {
+  background-color: var(--primary-color);
+  color: #f3e600;
+}
+
+.action-undo_pause_session {
+  background-color: var(--primary-color);
+  color: #bb01ff;
 }
 
 .action-start_session {
@@ -715,7 +727,9 @@ table tbody tr:last-child td {
   background-color: var(--primary-color);
 }
 
-.action-undo {
+.action-undo,
+.action-undo_end_session 
+{
   background-color: #95a5a6;
 }
 
