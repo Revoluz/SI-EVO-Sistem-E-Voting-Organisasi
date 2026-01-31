@@ -48,11 +48,6 @@ struct DataQueue {
   string candidateName;
 };
 
-// struct QueueNode {
-//   DataQueue depan;
-//   DataQueue* belakang;
-// };
-
 // ==================== GLOBAL DATA ====================
 
 // Admin Data
@@ -575,32 +570,33 @@ public:
 };
 
 
-// // =================== VOTER QUEUE ===================
-// class Queue {
-//   public:
-//   int depan, belakang;
-//   int tampungan[MAX_VOTERS][MAX_VOTERS];
+// =================== VOTER QUEUE ===================
+class Queue {
+  public:
+  DataQueue *depan;
+  DataQeueu *belakang;
+  int tampungan[MAX_VOTERS][MAX_VOTERS];
 
-//   private:
-//   enqueue() {
-//     if(belakang == MAX_VOTERS - 1){
-//       showError("Antrian penuh!");
-//       return;
-//     }
-//     belakang ++;
-//     tampungan[belakang][0] = voter;
-//     tampungan[belakang][1] = voterIdNumber;
-//   }
+  private:
+  enqueue() {
+    if(belakang == MAX_VOTERS - 1){
+      showError("Antrian penuh!");
+      return;
+    }
+    belakang ++;
+    tampungan[belakang][0] = voter;
+    tampungan[belakang][1] = voterIdNumber;
+  }
 
-//   dequeue(){
-//     if (depan == belakang){
-//       showError("Antrian kosong!");
-//       return;
-//     }
-//     depan++;
-//     return tampungan[depan];
-//   }
-// }
+  dequeue(){
+    if (depan == belakang){
+      showError("Antrian kosong!");
+      return;
+    }
+    depan++;
+    return tampungan[depan];
+  }
+}
 
 
 // ==================== ADMIN MENU ====================
