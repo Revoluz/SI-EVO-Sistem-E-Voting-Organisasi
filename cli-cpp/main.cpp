@@ -482,51 +482,51 @@ private:
 public:
   void displayAll()
   {
-    vector<string> result;
+    vector<VoterBSTNode*> result;
     _inOrderTraversal(root, result);
 
     showMessage("\n--- Daftar Voter Terurut (In-Order) ---");
     for (size_t i = 0; i < result.size(); i++)
     {
-      VoterBSTNode *voter = search(result[i]);
-      string status = (voter && voter->voted) ? " Sudah Voting" : " Belum Voting";
-      cout << i + 1 << ". " << result[i] << " - " << status << endl;
+      string status = result[i]->voted ? "Sudah Voting" : "Belum Voting";
+      cout << i + 1 << ". " << result[i]->name
+           << " (" << result[i]->voterIdNumber << ") - " << status << endl;
     }
     cout <<"Total Voter: " << result.size() << endl;
   }
 
 private:
-  void _inOrderTraversal(VoterBSTNode *node, vector<string> &result)
+  void _inOrderTraversal(VoterBSTNode *node, vector<VoterBSTNode*> &result)
   {
     if (node != nullptr)
     {
       _inOrderTraversal(node->left, result);
-      result.push_back(node->name);
+      result.push_back(node);
       _inOrderTraversal(node->right, result);
     }
   }
 public:
   void displayVotedVoters()
   {
-    vector<string> result;
+    vector<VoterBSTNode*> result;
     _inOrderTraversalVoted(root, result);
 
     showMessage("\n--- Daftar Voter yang Sudah Voting ---");
     for (size_t i = 0; i < result.size(); i++)
     {
-      cout << i + 1 << ". " << result[i] << endl;
+      cout << i + 1 << ". " << result[i]->name << endl;
     }
     cout <<"Total Voter: " << result.size() << endl;
   }
 private:
-  void _inOrderTraversalVoted(VoterBSTNode *node, vector<string> &result)
+  void _inOrderTraversalVoted(VoterBSTNode *node, vector<VoterBSTNode*> &result)
   {
     if (node != nullptr)
     {
       _inOrderTraversalVoted(node->left, result);
       if (node->voted)
       {
-        result.push_back(node->name);
+        result.push_back(node);
       }
       _inOrderTraversalVoted(node->right, result);
     }
@@ -534,26 +534,26 @@ private:
 public:
   void displayNotVotedVoters()
   {
-    vector<string> result;
+    vector<VoterBSTNode*> result;
     _inOrderTraversalNotVoted(root, result);
 
     showMessage("\n--- Daftar Voter yang Belum Voting ---");
     for (size_t i = 0; i < result.size(); i++)
     {
-      cout << i + 1 << ". " << result[i] << endl;
+      cout << i + 1 << ". " << result[i]->name << endl;
     }
     cout <<"Total Voter: " << result.size() << endl;
   }
 
 private:
-  void _inOrderTraversalNotVoted(VoterBSTNode *node, vector<string> &result)
+  void _inOrderTraversalNotVoted(VoterBSTNode *node, vector<VoterBSTNode*> &result)
   {
     if (node != nullptr)
     {
       _inOrderTraversalNotVoted(node->left, result);
       if (!node->voted)
       {
-        result.push_back(node->name);
+        result.push_back(node);
       }
       _inOrderTraversalNotVoted(node->right, result);
     }
