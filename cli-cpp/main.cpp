@@ -50,12 +50,13 @@ struct DataQueue{
   DataQueue *next;
 };
 
-struct DataQueue {
+struct Vote{
   string voterName;
   string voterId;
-  int cadidateId;
+  int candidateId;
   string candidateName;
 };
+
 
 // ==================== GLOBAL DATA ====================
 
@@ -244,10 +245,10 @@ int getNumberInput(string prompt)
 //   voterCount = 50;
 // }
 
-
 // ================= LINKEDLIST LOG ================
 
 class LinkedList {
+  public:
   VoteLog *head;
   VoteLog *tail;
 
@@ -290,6 +291,82 @@ class LinkedList {
   };
 
 };
+
+// =================== VOTER QUEUE ===================
+class Queue {
+  private:
+  DataQueue* depan;
+  DataQueue* belakang;
+
+  public:
+
+  Queue(){
+    depan = nullptr;
+    belakang = nullptr;
+  }
+
+  bool isEmpty(){
+    return depan == nullptr;
+  }
+
+  void enqueue(string voterName,string voterId, int candidateId, string candidateName) {
+
+    DataQueue* newNode = new DataQueue();
+    newNode->voterName = voterName;
+    newNode->voterId = voterId;
+    newNode->candidateId = candidateId;
+    newNode->candidateName = candidateName;
+
+
+    if(isEmpty()){
+      depan = belakang = newNode;
+    } else{
+      belakang -> next = newNode;
+      belakang = newNode;
+  }
+}
+
+  void dequeue(int input, LinkedList &voteLogList){
+    if (isEmpty()){
+      showError("Antrian kosong!");
+      return;
+    }
+
+    DataQueue* current = depan;
+    DataQueue* del;
+    for(int i = 0; i < input; i++){
+      if(current != nullptr){
+        del = current;
+        current = current -> next;
+        depan = current;
+        // voteLogList.addHistoryVoter(*del);
+        delete del;
+      } else {
+        showError("Antrian tidak cukup!");
+        return;
+      }
+    }
+   
+  }
+
+  void displayAll(){
+    if (isEmpty()){
+      showError("Antrian kosong!");
+      return;
+    }
+
+    DataQueue* current = depan;
+    while (current != nullptr){
+      cout<< "Urutan antrian: " << endl;
+      cout<< "Voter Name: " << current->voterName << endl;
+      cout<< "Voter ID: " << current->voterId << endl;
+      cout<<endl;
+      current = current->next;
+    }
+  }
+
+};
+
 
 // ==================== BST IMPLEMENTATION ====================
 
@@ -625,53 +702,6 @@ public:
   int getSize() { return size; }
 };
 
-// ================= LINKEDLIST LOG ================
-
-
-class LinkedList {
-  VoteLog *head;
-  VoteLog *tail;
-
-  LinkedList(){
-    head = nullptr;
-    tail = nullptr;
-  }
-
-
-  void addHistoryVoter(DataQueue data){
-    VoteLog *dataNew;
-    dataNew->timestamp = time(0);
-    dataNew->voterName = data.voterName;
-    dataNew->voterId = data.voterId;
-    dataNew->candidateId = data.candidateId;
-    dataNew->candidateName = data.candidateName;
-    dataNew->next = nullptr;
-    
-    if (head == nullptr){
-        head = tail = dataNew;
-    } else {
-      tail->next = dataNew;
-      tail = dataNew;   
-    }
-
-  };
-
-  
-  void printHistory(){
-    VoteLog *current = head;
-    while (current != nullptr){
-      cout << "Timestamp: " << current->timestamp << endl;
-      cout << "Voter Name: " << current->voterName << endl;
-      cout << "Voter ID: " << current->voterId << endl;
-      cout << "Candidate ID: " << current->candidateId << endl;
-      cout << "Candidate Name: " << current->candidateName << endl;
-      cout << endl;
-      current = current->next;
-    }
-  };
-
-};
-
 // ==================== ADMIN MENU ====================
 
 bool loginAdmin(AdminBST &adminBST)
@@ -987,7 +1017,7 @@ void resetVoting()
   getInput("Tekan Enter untuk lanjut...");
 }
 
-void adminMenu(AdminBST &adminBST, VoterBST &voterBST)
+void adminMenu(AdminBST &adminBST, VoterBST &voterBST, Queue &voterQueue, LinkedList &voteLogList)
 {
   if (!loginAdmin(adminBST))
   {
@@ -1005,7 +1035,10 @@ void adminMenu(AdminBST &adminBST, VoterBST &voterBST)
     showMessage("  2. Kelola Voter");
     showMessage("  3. Lihat Statistik");
     showMessage("  4. Reset Voting");
-    showMessage("  5. Kembali ke Menu Utama");
+    showMessage("  5. Lihat Antrian Voter");
+    showMessage("  6. Dequeue Voter");
+    showMessage("  7. Lihat riwayat voting");
+    showMessage("  8. Kembali ke Menu Utama");
     showMessage("");
 
     int choice = getNumberInput("Masukkan pilihan: ");
@@ -1026,6 +1059,20 @@ void adminMenu(AdminBST &adminBST, VoterBST &voterBST)
       resetVoting();
       break;
     case 5:
+      voterQueue.displayAll();
+      getInput("Tekan Enter untuk kembali...");
+      break;
+    case 6:
+      int input;
+      cout<<"Masukkan jumlah voter yang ingin dikeluarkan: ";
+      cin>> input;
+      voterQueue.dequeue(input, voteLogList);
+      cin.ignore();
+      break;
+    case 7:
+      // voteLogList.printHistory();
+      break;
+    case 8:
       return;
     default:
       showError("Pilihan tidak valid");
@@ -1062,7 +1109,7 @@ void showCandidates()
   getInput("Tekan Enter untuk kembali...");
 }
 
-void voting(VoterBST &voterBST)
+void voting(VoterBST &voterBST, Queue &voterQueue)
 {
   clearScreen();
   showMessage("==========================================");
@@ -1141,7 +1188,10 @@ void voting(VoterBST &voterBST)
   cout << "Anda memilih: " << candidates[candidateIndex].name << endl;
   string confirm = getInput("Apakah Anda yakin? (y/n): ");
 
-  if (confirm != "y" && confirm != "Y")
+  if(confirm == "y" || confirm == "Y"){
+    voterQueue.enqueue(voterName, voterId, candidates[candidateIndex].id, candidates[candidateIndex].name);
+    showMessage("Anda telah masuk ke dalam antrian voting.");
+  } else if(confirm == "n" || confirm == "N")
   {
     showMessage("Voting dibatalkan.");
     getInput("Tekan Enter untuk lanjut...");
@@ -1170,7 +1220,7 @@ void voting(VoterBST &voterBST)
   getInput("Tekan Enter untuk lanjut...");
 }
 
-void voterMenu(VoterBST &voterBST)
+void voterMenu(VoterBST &voterBST, Queue &voterQueue)
 {
   while (true)
   {
@@ -1190,7 +1240,7 @@ void voterMenu(VoterBST &voterBST)
     switch (choice)
     {
     case 1:
-      voting(voterBST);
+      voting(voterBST, voterQueue);
       break;
     case 2:
       showCandidates();
@@ -1206,7 +1256,7 @@ void voterMenu(VoterBST &voterBST)
 
 // ==================== MAIN MENU ====================
 
-void mainMenu(AdminBST &adminBST, VoterBST &voterBST)
+void mainMenu(AdminBST &adminBST, VoterBST &voterBST, Queue &voterQueue, LinkedList voteLogList)
 {
   while (true)
   {
@@ -1227,10 +1277,10 @@ void mainMenu(AdminBST &adminBST, VoterBST &voterBST)
     switch (choice)
     {
     case 1:
-      adminMenu(adminBST, voterBST);
+      adminMenu(adminBST, voterBST, voterQueue, voteLogList);
       break;
     case 2:
-      voterMenu(voterBST);
+      voterMenu(voterBST, voterQueue);
       break;
     case 3:
       showMessage("Terima kasih telah menggunakan Sistem E-Voting. Sampai jumpa!");
@@ -1269,8 +1319,13 @@ int main()
         voters[i].voted);
   }
 
+  // Initialize voter queue
+  Queue voterQueue;
+  // Initialize LinkedList
+  LinkedList voteLogList;
+
   // Run main menu
-  mainMenu(adminBST, voterBST);
+  mainMenu(adminBST, voterBST, voterQueue, voteLogList);
 
   return 0;
 }
