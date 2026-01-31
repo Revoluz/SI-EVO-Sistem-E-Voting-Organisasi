@@ -34,7 +34,7 @@ struct Candidate {
 
 // Struct untuk Vote Log
 struct VoteLog {
-  int timestamp;
+  time_t timestamp;
   string voterName;
   string voterId;
   int candidateId;
@@ -158,13 +158,13 @@ void showMessage(string msg)
 
 void showSuccess(string msg)
 {
-  cout << "\n✅ " << msg << "\n"
+  cout << "\nSuccess: " << msg << "\n"
        << endl;
 }
 
 void showError(string msg)
 {
-  cout << "\n❌ Error: " << msg << "\n"
+  cout << "\nError: " << msg << "\n"
        << endl;
 }
 
@@ -248,10 +248,11 @@ int getNumberInput(string prompt)
 // ================= LINKEDLIST LOG ================
 
 class LinkedList {
-  public:
+  private:
   VoteLog *head;
   VoteLog *tail;
 
+  public:
   LinkedList(){
     head = nullptr;
     tail = nullptr;
@@ -259,7 +260,7 @@ class LinkedList {
 
 
   void addHistoryVoter(DataQueue data){
-    VoteLog *dataNew;
+    VoteLog *dataNew = new VoteLog();
     dataNew->timestamp = time(0);
     dataNew->voterName = data.voterName;
     dataNew->voterId = data.voterId;
@@ -276,15 +277,37 @@ class LinkedList {
 
   };
 
+  void printHistorySimple(){
+    VoteLog *current = head;
+
+    if (current == nullptr){
+      cout << "Tidak ada history" << endl;
+      return;
+    }
+
+    while (current != nullptr){
+      cout << "||" << current->voterName << " Memilih " << current->candidateName << "||" << "==>";
+      current = current->next;
+    }
+    cout << "NULL" <<endl;
+  }
   
   void printHistory(){
     VoteLog *current = head;
+    
+    if (current == nullptr){
+      cout << "Tidak ada history" << endl;
+      return;
+    }
+
     while (current != nullptr){
-      cout << "Timestamp: " << current->timestamp << endl;
+      cout << "=========================================="<<endl;
+      cout << "Timestamp: " << ctime(&current->timestamp);
       cout << "Voter Name: " << current->voterName << endl;
       cout << "Voter ID: " << current->voterId << endl;
       cout << "Candidate ID: " << current->candidateId << endl;
       cout << "Candidate Name: " << current->candidateName << endl;
+      cout << "=========================================="<<endl;
       cout << endl;
       current = current->next;
     }
@@ -339,7 +362,7 @@ class Queue {
         del = current;
         current = current -> next;
         depan = current;
-        // voteLogList.addHistoryVoter(*del);
+        voteLogList.addHistoryVoter(*del);
         delete del;
       } else {
         showError("Antrian tidak cukup!");
@@ -1070,8 +1093,23 @@ void adminMenu(AdminBST &adminBST, VoterBST &voterBST, Queue &voterQueue, Linked
       cin.ignore();
       break;
     case 7:
-      // voteLogList.printHistory();
-      break;
+      int input1;
+      cout << "=================================="<<endl;
+      cout << "1. Tampilkan History Versi Simple" << endl;
+      cout << "2. Tampilkan History Versi Full" << endl;
+      cout << "Masukkan pilihan: ";
+      cin >> input1; 
+    
+      if (input1 == 1){
+        voteLogList.printHistorySimple();
+      } else if (input1 == 2){
+        voteLogList.printHistory();
+    
+      }
+      cin.ignore();
+      getInput("Tekan Enter untuk kembali...");
+    
+      break; 
     case 8:
       return;
     default:
@@ -1256,7 +1294,7 @@ void voterMenu(VoterBST &voterBST, Queue &voterQueue)
 
 // ==================== MAIN MENU ====================
 
-void mainMenu(AdminBST &adminBST, VoterBST &voterBST, Queue &voterQueue, LinkedList voteLogList)
+void mainMenu(AdminBST &adminBST, VoterBST &voterBST, Queue &voterQueue, LinkedList &voteLogList)
 {
   while (true)
   {
