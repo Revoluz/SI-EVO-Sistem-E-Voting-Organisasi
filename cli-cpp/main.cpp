@@ -66,6 +66,15 @@ struct Admin {
   string username;
   string password;
 };
+
+enum SessionStatus {
+  PREPARATION,
+  ACTIVE,
+  PAUSED,
+  ENDED
+};
+
+SessionStatus currentSession = PREPARATION;
 // ==================== INITIALIZE DATA ====================
 
 Admin admins[MAX_ADMINS] = {
@@ -181,6 +190,10 @@ int getNumberInput(string prompt)
   string input = getInput(prompt);
   return stoi(input);
 }
+
+
+
+
 
 
 // void initializeVoters()
@@ -702,6 +715,177 @@ public:
   int getSize() { return size; }
 };
 
+// ==================== STACK ====================
+struct SessionSnapshot {
+  SessionStatus status;
+  int voteStackSize; // posisi vote stack saat snapshot
+};
+
+struct VoteAction {
+  int voterIndex;
+  int candidateIndex;
+};
+
+
+class VoteStack {
+private:
+  VoteAction data[200];
+  int top;
+
+public:
+  VoteStack() : top(-1) {}
+
+  void push(int voterIdx, int candidateIdx) {
+    data[++top] = {voterIdx, candidateIdx};
+  }
+
+  bool isEmpty() {
+    return top == -1;
+  }
+
+  int size() {
+    return top + 1;
+  }
+
+  VoteAction pop() {
+    return data[top--];
+  }
+};
+
+VoteStack voteStack;
+
+VoterBST voterBST;  
+
+class SessionStack {
+private:
+  SessionSnapshot data[100];
+  int top;
+
+public:
+  SessionStack() : top(-1) {}
+
+  void push(SessionSnapshot s) {
+    data[++top] = s;
+  }
+
+  SessionSnapshot pop() {
+    return data[top--];
+  }
+
+  bool isEmpty() {
+    return top == -1;
+  }
+};
+
+SessionStack sessionStack;
+
+
+
+// ====================== FUNGSI SNAPSHOT & UNDO ======================
+void saveSessionSnapshot() {
+  SessionSnapshot snapshot;
+  snapshot.status = currentSession;
+  snapshot.voteStackSize = voteStack.size(); 
+
+  sessionStack.push(snapshot);
+}
+
+
+void syncBSTVotedStatus(VoterBSTNode* node) {
+  if (node == nullptr) return;
+
+  syncBSTVotedStatus(node->left);
+
+  for (int i = 0; i < voterCount; i++) {
+    if (voters[i].name == node->name &&
+        voters[i].voterId == node->voterIdNumber) {
+          node->voted = voters[i].voted;
+          break;
+        }
+    }
+    syncBSTVotedStatus(node->right);
+  }
+
+void undoSession() {
+  if (sessionStack.isEmpty()) {
+    showError("Tidak ada session yang bisa di-undo!");
+    getInput("Tekan Enter...");
+    return;
+  }
+
+  SessionSnapshot last = sessionStack.pop();
+  currentSession = last.status;
+
+  //  BATALKAN VOTING SETELAH SNAPSHOT
+  while (voteStack.size() > last.voteStackSize) {
+    VoteAction v = voteStack.pop();
+
+    // rollback vote kandidat
+    candidates[v.candidateIndex].votes--;
+
+    // rollback voter di ARRAY
+    voters[v.voterIndex].voted = false;
+    // sinkronkan ulang status voted di BST
+    syncBSTVotedStatus(voterBST.root);
+
+
+  }
+
+  showSuccess("Undo berhasil! Session & voting dikembalikan.");
+  getInput("Tekan Enter...");
+}
+
+
+
+// ================== MANAGE SESSIONS ================
+void manageSession() {
+  while (true) {
+    clearScreen();
+    showMessage("==========================================");
+    showMessage("||        KELOLA SESSION VOTING          ||");
+    showMessage("==========================================");
+    showMessage("");
+
+    string status =
+      currentSession == PREPARATION ? "PREPARATION" :
+      currentSession == ACTIVE ? "ACTIVE" :
+      currentSession == PAUSED ? "PAUSED" : "ENDED";
+
+    showMessage("Status Session Saat Ini: " + status);
+    showMessage("");
+    showMessage("  1. START Session");
+    showMessage("  2. PAUSE Session");
+    showMessage("  3. END Session");
+    showMessage("  4. Kembali");
+
+    int choice = getNumberInput("Pilih: ");
+
+    if (choice == 4) return;
+
+    if (choice >= 1 && choice <= 3) {
+      saveSessionSnapshot();   // SIMPAN STATUS SEBELUM DIUBAH
+    }
+
+    if (choice == 1) {
+      currentSession = ACTIVE;
+    }
+    else if (choice == 2) {
+      currentSession = PAUSED;
+    }
+    else if (choice == 3) {
+      currentSession = ENDED;
+    }
+    else {
+      showError("Pilihan tidak valid!");
+      getInput("Enter...");
+      continue;
+    }
+    showSuccess("Session berhasil diubah!");
+    getInput("Enter...");
+  }
+}
+
+
 // ==================== ADMIN MENU ====================
 
 bool loginAdmin(AdminBST &adminBST)
@@ -985,6 +1169,7 @@ void manageVoter(VoterBST &voterBST)
 
 void resetVoting()
 {
+
   clearScreen();  
   showMessage("==========================================");
   showMessage("||           RESET VOTING                ||");
@@ -1034,49 +1219,55 @@ void adminMenu(AdminBST &adminBST, VoterBST &voterBST, Queue &voterQueue, Linked
     showMessage("  1. Kelola Kandidat");
     showMessage("  2. Kelola Voter");
     showMessage("  3. Lihat Statistik");
-    showMessage("  4. Reset Voting");
-    showMessage("  5. Lihat Antrian Voter");
-    showMessage("  6. Dequeue Voter");
-    showMessage("  7. Lihat riwayat voting");
-    showMessage("  8. Kembali ke Menu Utama");
+    showMessage("  4. Kelola Session Voting");
+    showMessage("  5. Undo Session");
+    showMessage("  6. Lihat Antrian Voter");
+    showMessage("  7. Dequeue Voter");
+    showMessage("  8. Lihat riwayat voting");
+    showMessage("  9. Kembali ke Menu Utama");
+
     showMessage("");
 
     int choice = getNumberInput("Masukkan pilihan: ");
     showMessage("");
 
     switch (choice)
-    {
-    case 1:
-      manageCandidate();
-      break;
-    case 2:
-      manageVoter(voterBST);
-      break;
-    case 3:
-      showStatistics();
-      break;
-    case 4:
-      resetVoting();
-      break;
-    case 5:
-      voterQueue.displayAll();
-      getInput("Tekan Enter untuk kembali...");
-      break;
-    case 6:
-      int input;
-      cout<<"Masukkan jumlah voter yang ingin dikeluarkan: ";
-      cin>> input;
-      voterQueue.dequeue(input, voteLogList);
-      cin.ignore();
-      break;
-    case 7:
-      // voteLogList.printHistory();
-      break;
-    case 8:
-      return;
-    default:
-      showError("Pilihan tidak valid");
-      getInput("Tekan Enter untuk lanjut...");
+    { 
+      case 1:
+        manageCandidate();
+        break;
+      case 2:
+        manageVoter(voterBST);
+        break;
+      case 3:
+        showStatistics();
+        break;
+      case 4:
+        manageSession();
+        break;
+      case 5:
+        undoSession();
+        break;
+      case 6:
+        voterQueue.displayAll();
+        getInput("Tekan Enter untuk kembali...");
+        break;
+      case 7 :
+        int input;
+        cout<<"Masukkan jumlah voter yang ingin dikeluarkan: ";
+        cin>> input;
+        voterQueue.dequeue(input, voteLogList);
+        cin.ignore();
+        break;
+      case 8:
+        voteLogList.printHistory();
+        getInput("Tekan Enter untuk kembali...");
+        break;
+      case 9:
+        return;
+      default:
+        showError("Pilihan tidak valid");
+        getInput("Tekan Enter...");
     }
   }
 }
@@ -1111,6 +1302,12 @@ void showCandidates()
 
 void voting(VoterBST &voterBST, Queue &voterQueue)
 {
+  if (currentSession != ACTIVE) {
+    showError("Voting tidak tersedia. tunggu waktu voting dibuka!");
+    getInput("Tekan Enter...");
+    return;
+  }
+
   clearScreen();
   showMessage("==========================================");
   showMessage("||                VOTING                ||");
@@ -1188,22 +1385,23 @@ void voting(VoterBST &voterBST, Queue &voterQueue)
   cout << "Anda memilih: " << candidates[candidateIndex].name << endl;
   string confirm = getInput("Apakah Anda yakin? (y/n): ");
 
-  if(confirm == "y" || confirm == "Y"){
-    voterQueue.enqueue(voterName, voterId, candidates[candidateIndex].id, candidates[candidateIndex].name);
-    showMessage("Anda telah masuk ke dalam antrian voting.");
-  } else if(confirm == "n" || confirm == "N")
+
+
+  if (confirm != "y" && confirm != "Y")
   {
     showMessage("Voting dibatalkan.");
     getInput("Tekan Enter untuk lanjut...");
     return;
   }
 
-  // UPDATE candidates votes
+  // UPDATE votes
   candidates[candidateIndex].votes++;
-
-  // UPDATE voters voted status
   voters[voterIndex].voted = true;
   validatedVoter->voted = true;
+
+  // CATAT AKSI VOTING
+  voteStack.push(voterIndex, candidateIndex);
+
 
   // Catat voting
   if (votesCount < MAX_VOTES)
@@ -1308,8 +1506,6 @@ int main()
         admins[i].password);
   }
 
-  // Initialize BST for voters
-  VoterBST voterBST;
   for (int i = 0; i < voterCount; i++)
   {
     voterBST.insert(
