@@ -39,6 +39,15 @@ struct VoteLog {
   string voterId;
   int candidateId;
   string candidateName;
+  VoteLog *next;
+};
+
+struct DataQueue{
+  string voterName;
+  string voterId;
+  int candidateId;
+  string candidateName;
+  DataQueue *next;
 };
 
 struct DataQueue {
@@ -569,35 +578,55 @@ public:
   int getSize() { return size; }
 };
 
+<<<<<<< HEAD
 
-// =================== VOTER QUEUE ===================
-class Queue {
-  public:
-  DataQueue *depan;
-  DataQeueu *belakang;
-  int tampungan[MAX_VOTERS][MAX_VOTERS];
+=======
+// ================= LINKEDLIST LOG ================
 
-  private:
-  enqueue() {
-    if(belakang == MAX_VOTERS - 1){
-      showError("Antrian penuh!");
-      return;
-    }
-    belakang ++;
-    tampungan[belakang][0] = voter;
-    tampungan[belakang][1] = voterIdNumber;
+
+class LinkedList {
+  VoteLog *head;
+  VoteLog *tail;
+
+  LinkedList(){
+    head = nullptr;
+    tail = nullptr;
   }
 
-  dequeue(){
-    if (depan == belakang){
-      showError("Antrian kosong!");
-      return;
-    }
-    depan++;
-    return tampungan[depan];
-  }
-}
 
+  void addHistoryVoter(DataQueue data){
+    VoteLog *dataNew;
+    dataNew->timestamp = time(0);
+    dataNew->voterName = data.voterName;
+    dataNew->voterId = data.voterId;
+    dataNew->candidateId = data.candidateId;
+    dataNew->candidateName = data.candidateName;
+    dataNew->next = nullptr;
+    
+    if (head == nullptr){
+        head = tail = dataNew;
+    } else {
+      tail->next = dataNew;
+      tail = dataNew;   
+    }
+
+  };
+
+  void printHistory(){
+    VoteLog *current = head;
+    while (current != nullptr){
+      cout << "Timestamp: " << current->timestamp << endl;
+      cout << "Voter Name: " << current->voterName << endl;
+      cout << "Voter ID: " << current->voterId << endl;
+      cout << "Candidate ID: " << current->candidateId << endl;
+      cout << "Candidate Name: " << current->candidateName << endl;
+      cout << endl;
+      current = current->next;
+    }
+  };
+
+};
+>>>>>>> ef148334dcbfa2d8553d5a1402692781fc00354a
 
 // ==================== ADMIN MENU ====================
 
