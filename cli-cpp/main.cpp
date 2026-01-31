@@ -41,6 +41,18 @@ struct VoteLog {
   string candidateName;
 };
 
+struct DataQueue {
+  string voterName;
+  string voterId;
+  int cadidateId;
+  string candidateName;
+};
+
+struct QueueNode {
+  DataQueue depan;
+  DataQueue* belakang;
+};
+
 // ==================== GLOBAL DATA ====================
 
 // Admin Data
@@ -562,6 +574,35 @@ public:
   int getSize() { return size; }
 };
 
+
+// // =================== VOTER QUEUE ===================
+// class Queue {
+//   public:
+//   int depan, belakang;
+//   int tampungan[MAX_VOTERS][MAX_VOTERS];
+
+//   private:
+//   enqueue() {
+//     if(belakang == MAX_VOTERS - 1){
+//       showError("Antrian penuh!");
+//       return;
+//     }
+//     belakang ++;
+//     tampungan[belakang][0] = voter;
+//     tampungan[belakang][1] = voterIdNumber;
+//   }
+
+//   dequeue(){
+//     if (depan == belakang){
+//       showError("Antrian kosong!");
+//       return;
+//     }
+//     depan++;
+//     return tampungan[depan];
+//   }
+// }
+
+
 // ==================== ADMIN MENU ====================
 
 bool loginAdmin(AdminBST &adminBST)
@@ -1017,6 +1058,7 @@ void voting(VoterBST &voterBST)
   }
 
   int choice = getNumberInput("Pilih nomor kandidat: ");
+
   int candidateIndex = choice - 1;
 
   if (candidateIndex < 0 || candidateIndex >= candidateCount)
