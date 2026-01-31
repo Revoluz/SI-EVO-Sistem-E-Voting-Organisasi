@@ -244,6 +244,53 @@ int getNumberInput(string prompt)
 //   voterCount = 50;
 // }
 
+
+// ================= LINKEDLIST LOG ================
+
+class LinkedList {
+  VoteLog *head;
+  VoteLog *tail;
+
+  LinkedList(){
+    head = nullptr;
+    tail = nullptr;
+  }
+
+
+  void addHistoryVoter(DataQueue data){
+    VoteLog *dataNew;
+    dataNew->timestamp = time(0);
+    dataNew->voterName = data.voterName;
+    dataNew->voterId = data.voterId;
+    dataNew->candidateId = data.candidateId;
+    dataNew->candidateName = data.candidateName;
+    dataNew->next = nullptr;
+    
+    if (head == nullptr){
+        head = tail = dataNew;
+    } else {
+      tail->next = dataNew;
+      tail = dataNew;   
+    }
+
+  };
+
+  
+  void printHistory(){
+    VoteLog *current = head;
+    while (current != nullptr){
+      cout << "Timestamp: " << current->timestamp << endl;
+      cout << "Voter Name: " << current->voterName << endl;
+      cout << "Voter ID: " << current->voterId << endl;
+      cout << "Candidate ID: " << current->candidateId << endl;
+      cout << "Candidate Name: " << current->candidateName << endl;
+      cout << endl;
+      current = current->next;
+    }
+  };
+
+};
+
 // ==================== BST IMPLEMENTATION ====================
 
 struct AdminBSTNode
@@ -578,6 +625,52 @@ public:
   int getSize() { return size; }
 };
 
+// ================= LINKEDLIST LOG ================
+
+
+class LinkedList {
+  VoteLog *head;
+  VoteLog *tail;
+
+  LinkedList(){
+    head = nullptr;
+    tail = nullptr;
+  }
+
+
+  void addHistoryVoter(DataQueue data){
+    VoteLog *dataNew;
+    dataNew->timestamp = time(0);
+    dataNew->voterName = data.voterName;
+    dataNew->voterId = data.voterId;
+    dataNew->candidateId = data.candidateId;
+    dataNew->candidateName = data.candidateName;
+    dataNew->next = nullptr;
+    
+    if (head == nullptr){
+        head = tail = dataNew;
+    } else {
+      tail->next = dataNew;
+      tail = dataNew;   
+    }
+
+  };
+
+  
+  void printHistory(){
+    VoteLog *current = head;
+    while (current != nullptr){
+      cout << "Timestamp: " << current->timestamp << endl;
+      cout << "Voter Name: " << current->voterName << endl;
+      cout << "Voter ID: " << current->voterId << endl;
+      cout << "Candidate ID: " << current->candidateId << endl;
+      cout << "Candidate Name: " << current->candidateName << endl;
+      cout << endl;
+      current = current->next;
+    }
+  };
+
+};
 
 // ==================== ADMIN MENU ====================
 
