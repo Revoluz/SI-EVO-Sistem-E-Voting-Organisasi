@@ -48,10 +48,10 @@ struct DataQueue {
   string candidateName;
 };
 
-struct QueueNode {
-  DataQueue depan;
-  DataQueue* belakang;
-};
+// struct QueueNode {
+//   DataQueue depan;
+//   DataQueue* belakang;
+// };
 
 // ==================== GLOBAL DATA ====================
 
