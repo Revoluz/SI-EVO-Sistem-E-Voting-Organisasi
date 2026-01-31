@@ -602,6 +602,7 @@ class LinkedList {
 
   };
 
+  
   void printHistory(){
     VoteLog *current = head;
     while (current != nullptr){
