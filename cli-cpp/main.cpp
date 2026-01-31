@@ -604,9 +604,9 @@ class Queue {
 bool loginAdmin(AdminBST &adminBST)
 {
   clearScreen();
-  showMessage("╔════════════════════════════════════════╗");
-  showMessage("║      LOGIN ADMIN                       ║");
-  showMessage("╚════════════════════════════════════════╝");
+  showMessage("==========================================");
+  showMessage("||           LOGIN ADMIN                ||");
+  showMessage("==========================================");
   showMessage("");
 
   showMessage("📊 BST Stats - Total Admin: " + to_string(adminBST.getSize()));
@@ -631,9 +631,9 @@ bool loginAdmin(AdminBST &adminBST)
 void showStatistics()
 {
   clearScreen();
-  showMessage("╔════════════════════════════════════════╗");
-  showMessage("║        STATISTIK VOTING                ║");
-  showMessage("╚════════════════════════════════════════╝");
+  showMessage("==========================================");
+  showMessage("||       STATISTIK VOTING                ||");
+  showMessage("==========================================");
   showMessage("");
 
   if (candidateCount == 0)
@@ -664,9 +664,9 @@ void manageCandidate()
   while (true)
   {
     clearScreen();
-    showMessage("╔════════════════════════════════════════╗");
-    showMessage("║      KELOLA KANDIDAT                   ║");
-    showMessage("╚════════════════════════════════════════╝");
+    showMessage("==========================================");
+    showMessage("||          KELOLA KANDIDAT              ||");
+    showMessage("==========================================");
     showMessage("");
     showMessage("  1. Tambah Kandidat");
     showMessage("  2. Lihat Semua Kandidat");
@@ -770,9 +770,9 @@ void manageVoter(VoterBST &voterBST)
   while (true)
   {
     clearScreen();
-    showMessage("╔════════════════════════════════════════╗");
-    showMessage("║      KELOLA VOTER                      ║");
-    showMessage("╚════════════════════════════════════════╝");
+    showMessage("==========================================");
+    showMessage("||           KELOLA VOTER                ||");
+    showMessage("==========================================");
     showMessage("");
     showMessage("  1. Tambah Voter");
     showMessage("  2. Lihat Semua Voter");
@@ -882,10 +882,10 @@ void manageVoter(VoterBST &voterBST)
 
 void resetVoting()
 {
-  clearScreen();
-  showMessage("╔════════════════════════════════════════╗");
-  showMessage("║      RESET VOTING                      ║");
-  showMessage("╚════════════════════════════════════════╝");
+  clearScreen();  
+  showMessage("==========================================");
+  showMessage("||           RESET VOTING                ||");
+  showMessage("==========================================");
   showMessage("");
   showMessage("⚠️  PERINGATAN: Tindakan ini akan mereset semua voting!");
   showMessage("");
@@ -924,9 +924,9 @@ void adminMenu(AdminBST &adminBST, VoterBST &voterBST)
   while (true)
   {
     clearScreen();
-    showMessage("╔════════════════════════════════════════╗");
-    showMessage("║      MENU ADMIN                        ║");
-    showMessage("╚════════════════════════════════════════╝");
+    showMessage("==========================================");
+    showMessage("||            MENU ADMIN                ||");
+    showMessage("==========================================");
     showMessage("");
     showMessage("  1. Kelola Kandidat");
     showMessage("  2. Kelola Voter");
@@ -966,9 +966,9 @@ void adminMenu(AdminBST &adminBST, VoterBST &voterBST)
 void showCandidates()
 {
   clearScreen();
-  showMessage("╔════════════════════════════════════════╗");
-  showMessage("║      DAFTAR KANDIDAT                   ║");
-  showMessage("╚════════════════════════════════════════╝");
+  showMessage("==========================================");
+  showMessage("||          DAFTAR KANDIDAT             ||");
+  showMessage("==========================================");
   showMessage("");
 
   if (candidateCount == 0)
@@ -992,9 +992,9 @@ void showCandidates()
 void voting(VoterBST &voterBST)
 {
   clearScreen();
-  showMessage("╔════════════════════════════════════════╗");
-  showMessage("║      VOTING                            ║");
-  showMessage("╚════════════════════════════════════════╝");
+  showMessage("==========================================");
+  showMessage("||                VOTING                ||");
+  showMessage("==========================================");
   showMessage("");
 
   showMessage("─── Autentikasi Voter ───");
@@ -1102,9 +1102,9 @@ void voterMenu(VoterBST &voterBST)
   while (true)
   {
     clearScreen();
-    showMessage("╔════════════════════════════════════════╗");
-    showMessage("║      MENU VOTER                       ║");
-    showMessage("╚════════════════════════════════════════╝");
+    showMessage("==========================================");
+    showMessage("||             MENU VOTER                ||");
+    showMessage("==========================================");
     showMessage("");
     showMessage("  1. Voting");
     showMessage("  2. Lihat Daftar Kandidat");
@@ -1138,9 +1138,9 @@ void mainMenu(AdminBST &adminBST, VoterBST &voterBST)
   while (true)
   {
     clearScreen();
-    showMessage("╔════════════════════════════════════════╗");
-    showMessage("║   SISTEM E-VOTING ORGANISASI - C++    ║");
-    showMessage("╚════════════════════════════════════════╝");
+    showMessage("==========================================");
+    showMessage("||        SISTEM E-VOTING | C++         ||");
+    showMessage("==========================================");
     showMessage("");
     showMessage("Pilih role Anda:");
     showMessage("  1. Admin");
