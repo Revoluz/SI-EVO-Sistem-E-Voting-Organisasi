@@ -831,7 +831,7 @@ class Queue {
     act.type = ACTION_DEQUEUE;
     act.data = *del;
     systemActionStack.push(act);
-
+    voteLogList.addHistoryVoter(*del);
     delete del;
   }
 }
