@@ -8,7 +8,7 @@
 using namespace std;
 
 const int MAX_VOTERS = 100;
-const int MAX_CANDIDATES = 4;
+const int MAX_CANDIDATES = 10;
 const int MAX_ADMINS = 3;
 const int MAX_VOTES = 100;
 
@@ -95,10 +95,10 @@ int adminCount = 3;
 
 // Candidates Data
 Candidate candidates[MAX_CANDIDATES] = {
-    {1, "Reza Gunawan", "Membangun organisasi yang inklusif dan mengutamakan kesejahteraan mahasiswa", "Meningkatkan partisipasi mahasiswa, memperbaiki fasilitas kampus, dan memperkuat hubungan dengan industri", 1},
+    {1, "Reza Gunawan", "Membangun organisasi yang inklusif dan mengutamakan kesejahteraan mahasiswa", "Meningkatkan partisipasi mahasiswa, memperbaiki fasilitas kampus, dan memperkuat hubungan dengan industri", 0},
     {2, "Siti Nurdiana", "Menciptakan kampus yang lebih dinamis dan inovatif", "Mengembangkan program kegiatan, meningkatkan transparansi, dan memberdayakan mahasiswa", 0},
-    {3, "Tri Wirawan", "Mengutamakan aspirasi dan kebutuhan mahasiswa dalam setiap keputusan", "Memperkuat advokasi mahasiswa, meningkatkan akses informasi, dan membangun kepercayaan", 4},
-    {4, "Ulfa Ramadhani", "BEM yang responsif terhadap perubahan zaman dan kebutuhan mahasiswa", "Mengintegrasikan teknologi, meningkatkan kualitas program, dan menjadi jembatan komunikasi", 5}};
+    {3, "Tri Wirawan", "Mengutamakan aspirasi dan kebutuhan mahasiswa dalam setiap keputusan", "Memperkuat advokasi mahasiswa, meningkatkan akses informasi, dan membangun kepercayaan", 0},
+    {4, "Ulfa Ramadhani", "BEM yang responsif terhadap perubahan zaman dan kebutuhan mahasiswa", "Mengintegrasikan teknologi, meningkatkan kualitas program, dan menjadi jembatan komunikasi", 0}};
 int candidateCount = 4;
 
 // Voters Data
@@ -201,10 +201,7 @@ int getNumberInput(string prompt)
   return stoi(input);
 }
 
-
-
-
-
+// Forward declaration
 
 // void initializeVoters()
 // {
@@ -365,6 +362,7 @@ struct VoterBSTNode
   VoterBSTNode(int id, string n, string vid, bool v = false)
       : voterId(id), name(n), voterIdNumber(vid), voted(v), left(nullptr), right(nullptr) {}
 };
+void syncBSTVotedStatus(VoterBSTNode *node);
 
 // ==================== ADMIN BST ====================
 
@@ -593,80 +591,65 @@ private:
 public:
   void displayAll()
   {
-    vector<VoterBSTNode*> result;
-    _inOrderTraversal(root, result);
-
-    showMessage("\n--- Daftar Voter Terurut (In-Order) ---");
-    for (size_t i = 0; i < result.size(); i++)
-    {
-      string status = result[i]->voted ? "Sudah Voting" : "Belum Voting";
-      cout << i + 1 << ". " << result[i]->name
-           << " (" << result[i]->voterIdNumber << ") - " << status << endl;
-    }
-    cout <<"Total Voter: " << result.size() << endl;
+    int counter = 1;
+    _displayInOrder(root,counter);
+    cout <<"Total Voter: " << size << endl;
   }
 
 private:
-  void _inOrderTraversal(VoterBSTNode *node, vector<VoterBSTNode*> &result)
+  void _displayInOrder(VoterBSTNode *node, int &counter)
   {
     if (node != nullptr)
     {
-      _inOrderTraversal(node->left, result);
-      result.push_back(node);
-      _inOrderTraversal(node->right, result);
+      _displayInOrder(node->left, counter);
+      string status = node->voted ? "Sudah Voting" : "Belum Voting";
+      cout << counter << ". " << node->name << " (" << node->voterIdNumber << ") - " << status << endl;
+      counter++;
+      _displayInOrder(node->right, counter);
     }
   }
 public:
   void displayVotedVoters()
   {
-    vector<VoterBSTNode*> result;
-    _inOrderTraversalVoted(root, result);
-
-    showMessage("\n--- Daftar Voter yang Sudah Voting ---");
-    for (size_t i = 0; i < result.size(); i++)
-    {
-      cout << i + 1 << ". " << result[i]->name << endl;
-    }
-    cout <<"Total Voter: " << result.size() << endl;
+    int counter = 1;
+    _displayInOrderVoted(root, counter);
+    cout <<"Total Voter: " << counter - 1 << endl;
   }
 private:
-  void _inOrderTraversalVoted(VoterBSTNode *node, vector<VoterBSTNode*> &result)
+  void _displayInOrderVoted(VoterBSTNode *node, int &counter)
   {
     if (node != nullptr)
     {
-      _inOrderTraversalVoted(node->left, result);
+      _displayInOrderVoted(node->left, counter);
       if (node->voted)
       {
-        result.push_back(node);
+        cout << counter << ". " << node->name << " (" << node->voterIdNumber << ") - Sudah Voting" << endl;
+        counter++;
       }
-      _inOrderTraversalVoted(node->right, result);
+      _displayInOrderVoted(node->right, counter);
     }
   }
 public:
   void displayNotVotedVoters()
   {
-    vector<VoterBSTNode*> result;
-    _inOrderTraversalNotVoted(root, result);
-
-    showMessage("\n--- Daftar Voter yang Belum Voting ---");
-    for (size_t i = 0; i < result.size(); i++)
-    {
-      cout << i + 1 << ". " << result[i]->name << endl;
-    }
-    cout <<"Total Voter: " << result.size() << endl;
+    int counter = 1;
+    _displayInOrderNotVoted(root, counter);
+    cout <<"Total Voter: " << counter - 1 << endl;
   }
 
 private:
-  void _inOrderTraversalNotVoted(VoterBSTNode *node, vector<VoterBSTNode*> &result)
+
+  void _displayInOrderNotVoted(VoterBSTNode *node, int &counter)
   {
     if (node != nullptr)
     {
-      _inOrderTraversalNotVoted(node->left, result);
+      _displayInOrderNotVoted(node->left, counter);
       if (!node->voted)
       {
-        result.push_back(node);
+        cout << counter << ". " << node->name << " (" << node->voterIdNumber << ") - Belum Voting" << endl;
+        counter++;
       }
-      _inOrderTraversalNotVoted(node->right, result);
+      _displayInOrderNotVoted(node->right, counter);
     }
   }
 public:
@@ -1067,7 +1050,8 @@ void showStatistics()
     for (int i = 0; i < candidateCount; i++)
     {
       cout << (i + 1) << ". " << candidates[i].name << " - " << candidates[i].votes << " suara" << endl;
-      cout << "   " << candidates[i].mission << endl;
+      cout << "Visi: " << candidates[i].vision << endl;
+      cout << "Misi: " << candidates[i].mission << endl;
     }
   }
 
@@ -1339,6 +1323,8 @@ void adminMenu(AdminBST &adminBST, VoterBST &voterBST, Queue &voterQueue, Linked
 {
   if (!loginAdmin(adminBST))
   {
+    showError("Gagal login sebagai admin.");
+    getInput("Tekan Enter...");
     return;
   }
 
