@@ -1541,17 +1541,6 @@ void voting(VoterBST &voterBST, Queue &voterQueue, LinkedList &voteLogList)
     return;
   }
 
-  // 🔥 CATAT HISTORY SEKALI, PERMANEN
-  DataQueue historyData;
-  historyData.voterName = voterName;
-  historyData.voterId = voterId;
-  historyData.candidateId = candidates[candidateIndex].id;
-  historyData.candidateName = candidates[candidateIndex].name;
-
-  voteLogList.addHistoryVoter(historyData);
-
-
-
   // Catat voting
   if (votesCount < MAX_VOTES)
   {
