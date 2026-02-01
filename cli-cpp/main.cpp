@@ -5,7 +5,6 @@
 #include <iomanip>
 #include <ctime>
 #include <vector>
-
 using namespace std;
 
 const int MAX_VOTERS = 100;
@@ -1255,55 +1254,6 @@ void adminMenu(AdminBST &adminBST, VoterBST &voterBST, Queue &voterQueue, Linked
     showMessage("");
 
     switch (choice)
-<<<<<<< HEAD
-    {
-    case 1:
-      manageCandidate();
-      break;
-    case 2:
-      manageVoter(voterBST);
-      break;
-    case 3:
-      showStatistics();
-      break;
-    case 4:
-      resetVoting();
-      break;
-    case 5:
-      voterQueue.displayAll();
-      getInput("Tekan Enter untuk kembali...");
-      break;
-    case 6:
-      int input;
-      cout<<"Masukkan jumlah voter yang ingin dikeluarkan: ";
-      cin>> input;
-      voterQueue.dequeue(input, voteLogList);
-      cin.ignore();
-      break;
-    case 7:
-      int input1;
-      cout << "=================================="<<endl;
-      cout << "1. Tampilkan History Versi Simple" << endl;
-      cout << "2. Tampilkan History Versi Full" << endl;
-      cout << "Masukkan pilihan: ";
-      cin >> input1; 
-    
-      if (input1 == 1){
-        voteLogList.printHistorySimple();
-      } else if (input1 == 2){
-        voteLogList.printHistory();
-    
-      }
-      cin.ignore();
-      getInput("Tekan Enter untuk kembali...");
-    
-      break; 
-    case 8:
-      return;
-    default:
-      showError("Pilihan tidak valid");
-      getInput("Tekan Enter untuk lanjut...");
-=======
     { 
       case 1:
         manageCandidate();
@@ -1332,15 +1282,29 @@ void adminMenu(AdminBST &adminBST, VoterBST &voterBST, Queue &voterQueue, Linked
         cin.ignore();
         break;
       case 8:
-        voteLogList.printHistory();
+        int input1;
+        cout << "=================================="<<endl;
+        cout << "1. Tampilkan History Versi Simple" << endl;
+        cout << "2. Tampilkan History Versi Full" << endl;
+        cout << "Masukkan pilihan: ";
+        cin >> input1; 
+      
+        if (input1 == 1){
+          voteLogList.printHistorySimple();
+        } else if (input1 == 2){
+          voteLogList.printHistory();
+      
+        }
+
+        cin.ignore();
         getInput("Tekan Enter untuk kembali...");
+      
         break;
       case 9:
         return;
       default:
         showError("Pilihan tidak valid");
         getInput("Tekan Enter...");
->>>>>>> 6b7867ba18fc2f0633545caa45e5966e560051b4
     }
   }
 }
@@ -1458,10 +1422,12 @@ void voting(VoterBST &voterBST, Queue &voterQueue)
   cout << "Anda memilih: " << candidates[candidateIndex].name << endl;
   string confirm = getInput("Apakah Anda yakin? (y/n): ");
 
-
-
-  if (confirm != "y" && confirm != "Y")
-  {
+  if (confirm == "y" || confirm == "Y") {
+    voterQueue.enqueue(voterName, voterId, candidates[candidateIndex].id, candidates[candidateIndex].name);
+    showMessage("Anda telah masuk ke dalam antrian voting.");
+    getInput("Tekan Enter untuk lanjut...");
+    return;
+  } else if (confirm != "y" && confirm != "Y") {
     showMessage("Voting dibatalkan.");
     getInput("Tekan Enter untuk lanjut...");
     return;
