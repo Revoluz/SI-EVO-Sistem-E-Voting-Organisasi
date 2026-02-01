@@ -73,6 +73,17 @@ enum SessionStatus {
   ENDED
 };
 
+enum ActionType {
+  ACTION_ENQUEUE,   // orang MASUK antrian
+  ACTION_DEQUEUE    // orang KELUAR antrian
+};
+
+struct SystemAction {
+  ActionType type;   // ENQUEUE / DEQUEUE
+  DataQueue data;    // data voter
+};
+
+
 SessionStatus currentSession = PREPARATION;
 // ==================== INITIALIZE DATA ====================
 
@@ -324,81 +335,6 @@ class LinkedList {
       current = current->next;
     }
   };
-
-};
-
-// =================== VOTER QUEUE ===================
-class Queue {
-  private:
-  DataQueue* depan;
-  DataQueue* belakang;
-
-  public:
-
-  Queue(){
-    depan = nullptr;
-    belakang = nullptr;
-  }
-
-  bool isEmpty(){
-    return depan == nullptr;
-  }
-
-  void enqueue(string voterName,string voterId, int candidateId, string candidateName) {
-
-    DataQueue* newNode = new DataQueue();
-    newNode->voterName = voterName;
-    newNode->voterId = voterId;
-    newNode->candidateId = candidateId;
-    newNode->candidateName = candidateName;
-
-
-    if(isEmpty()){
-      depan = belakang = newNode;
-    } else{
-      belakang -> next = newNode;
-      belakang = newNode;
-  }
-}
-
-  void dequeue(int input, LinkedList &voteLogList){
-    if (isEmpty()){
-      showError("Antrian kosong!");
-      return;
-    }
-
-    DataQueue* current = depan;
-    DataQueue* del;
-    for(int i = 0; i < input; i++){
-      if(current != nullptr){
-        del = current;
-        current = current -> next;
-        depan = current;
-        voteLogList.addHistoryVoter(*del);
-        delete del;
-      } else {
-        showError("Antrian tidak cukup!");
-        return;
-      }
-    }
-   
-  }
-
-  void displayAll(){
-    if (isEmpty()){
-      showError("Antrian kosong!");
-      return;
-    }
-
-    DataQueue* current = depan;
-    while (current != nullptr){
-      cout<< "Urutan antrian: " << endl;
-      cout<< "Voter Name: " << current->voterName << endl;
-      cout<< "Voter ID: " << current->voterId << endl;
-      cout<<endl;
-      current = current->next;
-    }
-  }
 
 };
 
@@ -740,7 +676,8 @@ public:
 // ==================== STACK ====================
 struct SessionSnapshot {
   SessionStatus status;
-  int voteStackSize; // posisi vote stack saat snapshot
+  int voteStackSize;
+  int systemActionSize; // posisi vote stack saat snapshot
 };
 
 struct VoteAction {
@@ -801,16 +738,179 @@ public:
 
 SessionStack sessionStack;
 
+class ActionStack {
+private:
+  SystemAction data[500];
+  int top;
+
+public:
+  ActionStack() : top(-1) {}
+
+  void push(SystemAction a) {
+    data[++top] = a;
+  }
+
+  SystemAction pop() {
+    return data[top--];
+  }
+
+  int size() {
+    return top + 1;
+  }
+
+  bool isEmpty() {
+    return top == -1;
+  }
+};
+ActionStack systemActionStack;
+
+// =================== VOTER QUEUE ===================
+
+class Queue {
+  private:
+  DataQueue* depan;
+  DataQueue* belakang;
+
+  public:
+
+  Queue(){
+    depan = nullptr;
+    belakang = nullptr;
+  }
+
+  bool isEmpty(){
+    return depan == nullptr;
+  }
+
+  void enqueue(string voterName,string voterId, int candidateId, string candidateName) {
+
+    DataQueue* newNode = new DataQueue();
+    newNode->voterName = voterName;
+    newNode->voterId = voterId;
+    newNode->candidateId = candidateId;
+    newNode->candidateName = candidateName;
+
+
+    if(isEmpty()){
+      depan = belakang = newNode;
+    } else{
+      belakang -> next = newNode;
+      belakang = newNode;
+  }
+}
+
+ void dequeue(int input, LinkedList &voteLogList){
+  if (isEmpty()){
+    showError("Antrian kosong!");
+    return;
+  }
+
+  for(int i = 0; i < input; i++){
+    if (depan == nullptr){
+      showError("Antrian tidak cukup!");
+      return;
+    }
+
+    DataQueue* del = depan;
+    depan = depan->next;
+
+    // 🔥 EKSEKUSI VOTING DI SINI
+    int voterIndex = -1;
+    int candidateIndex = -1;
+
+    // cari voter di array
+    for (int j = 0; j < voterCount; j++){
+      if (voters[j].name == del->voterName &&
+          voters[j].voterId == del->voterId){
+        voterIndex = j;
+        break;
+      }
+    }
+
+    // cari kandidat
+    for (int k = 0; k < candidateCount; k++){
+      if (candidates[k].id == del->candidateId){
+        candidateIndex = k;
+        break;
+      }
+    }
+
+    if (voterIndex != -1 && candidateIndex != -1){
+      candidates[candidateIndex].votes++;
+      voters[voterIndex].voted = true;
+      
+      syncBSTVotedStatus(voterBST.root);
+      voteStack.push(voterIndex, candidateIndex);
+    }
+
+    // catat dequeue untuk undo queue
+    SystemAction act;
+    act.type = ACTION_DEQUEUE;
+    act.data = *del;
+    systemActionStack.push(act);
+
+    delete del;
+  }
+}
+
+  void removeLast() {
+    if (isEmpty()) return;
+
+    if (depan == belakang) {
+      delete depan;
+      depan = belakang = nullptr;
+      return;
+    }
+
+    DataQueue* curr = depan;
+    while (curr->next != belakang) {
+      curr = curr->next;
+    }
+
+    delete belakang;
+    belakang = curr;
+    belakang->next = nullptr;
+  }
+  void enqueueFront(DataQueue data) {
+    DataQueue* newNode = new DataQueue(data);
+    newNode->next = depan;
+    depan = newNode;
+
+    if (belakang == nullptr)
+      belakang = newNode;
+  }
+
+  void displayAll(){
+    if (isEmpty()){
+      showError("Antrian kosong!");
+      return;
+    }
+
+    DataQueue* current = depan;
+    while (current != nullptr){
+      cout<< "Urutan antrian: " << endl;
+      cout<< "Voter Name: " << current->voterName << endl;
+      cout<< "Voter ID: " << current->voterId << endl;
+      cout<<endl;
+      current = current->next;
+    }
+  }
+
+};
+
+Queue voterQueue;
+
 
 
 // ====================== FUNGSI SNAPSHOT & UNDO ======================
 void saveSessionSnapshot() {
   SessionSnapshot snapshot;
   snapshot.status = currentSession;
-  snapshot.voteStackSize = voteStack.size(); 
-
+  snapshot.voteStackSize = voteStack.size();
+  snapshot.systemActionSize = systemActionStack.size();
   sessionStack.push(snapshot);
 }
+
 
 
 void syncBSTVotedStatus(VoterBSTNode* node) {
@@ -852,6 +952,17 @@ void undoSession() {
 
 
   }
+  while (systemActionStack.size() > last.systemActionSize) {
+    SystemAction act = systemActionStack.pop();
+
+    if (act.type == ACTION_ENQUEUE) {
+      voterQueue.removeLast();        // undo orang masuk
+    }
+    else if (act.type == ACTION_DEQUEUE) {
+      voterQueue.enqueueFront(act.data); // undo orang keluar
+    }
+  }
+
 
   showSuccess("Undo berhasil! Session & voting dikembalikan.");
   getInput("Tekan Enter...");
@@ -1337,7 +1448,7 @@ void showCandidates()
   getInput("Tekan Enter untuk kembali...");
 }
 
-void voting(VoterBST &voterBST, Queue &voterQueue)
+void voting(VoterBST &voterBST, Queue &voterQueue, LinkedList &voteLogList)
 {
   if (currentSession != ACTIVE) {
     showError("Voting tidak tersedia. tunggu waktu voting dibuka!");
@@ -1426,19 +1537,33 @@ void voting(VoterBST &voterBST, Queue &voterQueue)
     voterQueue.enqueue(voterName, voterId, candidates[candidateIndex].id, candidates[candidateIndex].name);
     showMessage("Anda telah masuk ke dalam antrian voting.");
     getInput("Tekan Enter untuk lanjut...");
+    SystemAction act;
+    act.type = ACTION_ENQUEUE;
+    act.data = {
+      voterName,
+      voterId,
+      candidates[candidateIndex].id,
+      candidates[candidateIndex].name,
+      nullptr
+    };
+
+    systemActionStack.push(act);
+
   } else if (confirm != "y" && confirm != "Y") {
     showMessage("Voting dibatalkan.");
     getInput("Tekan Enter untuk lanjut...");
     return;
   }
 
-  // UPDATE votes
-  candidates[candidateIndex].votes++;
-  voters[voterIndex].voted = true;
-  validatedVoter->voted = true;
+  // 🔥 CATAT HISTORY SEKALI, PERMANEN
+  DataQueue historyData;
+  historyData.voterName = voterName;
+  historyData.voterId = voterId;
+  historyData.candidateId = candidates[candidateIndex].id;
+  historyData.candidateName = candidates[candidateIndex].name;
 
-  // CATAT AKSI VOTING
-  voteStack.push(voterIndex, candidateIndex);
+  voteLogList.addHistoryVoter(historyData);
+
 
 
   // Catat voting
@@ -1456,7 +1581,7 @@ void voting(VoterBST &voterBST, Queue &voterQueue)
   getInput("Tekan Enter untuk lanjut...");
 }
 
-void voterMenu(VoterBST &voterBST, Queue &voterQueue)
+void voterMenu(VoterBST &voterBST, Queue &voterQueue, LinkedList &voteLogList)
 {
   while (true)
   {
@@ -1476,7 +1601,7 @@ void voterMenu(VoterBST &voterBST, Queue &voterQueue)
     switch (choice)
     {
     case 1:
-      voting(voterBST, voterQueue);
+      voting(voterBST, voterQueue, voteLogList);
       break;
     case 2:
       showCandidates();
@@ -1516,7 +1641,7 @@ void mainMenu(AdminBST &adminBST, VoterBST &voterBST, Queue &voterQueue, LinkedL
       adminMenu(adminBST, voterBST, voterQueue, voteLogList);
       break;
     case 2:
-      voterMenu(voterBST, voterQueue);
+      voterMenu(voterBST, voterQueue, voteLogList);
       break;
     case 3:
       showMessage("Terima kasih telah menggunakan Sistem E-Voting. Sampai jumpa!");
@@ -1553,8 +1678,6 @@ int main()
         voters[i].voted);
   }
 
-  // Initialize voter queue
-  Queue voterQueue;
   // Initialize LinkedList
   LinkedList voteLogList;
 
