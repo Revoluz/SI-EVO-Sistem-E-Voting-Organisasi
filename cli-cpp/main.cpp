@@ -1426,7 +1426,6 @@ void voting(VoterBST &voterBST, Queue &voterQueue)
     voterQueue.enqueue(voterName, voterId, candidates[candidateIndex].id, candidates[candidateIndex].name);
     showMessage("Anda telah masuk ke dalam antrian voting.");
     getInput("Tekan Enter untuk lanjut...");
-    return;
   } else if (confirm != "y" && confirm != "Y") {
     showMessage("Voting dibatalkan.");
     getInput("Tekan Enter untuk lanjut...");
