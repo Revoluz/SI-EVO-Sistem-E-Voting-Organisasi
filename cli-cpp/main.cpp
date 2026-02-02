@@ -113,47 +113,48 @@ Voter voters[MAX_VOTERS] = {
     {8, "Tri Wirawan", "008", false},
     {9, "Desi Irawan", "009", false},
     {10, "Yuki Tanaka", "010", false},
-    {11, "Gregorius Dedi", "011", false},
-    {12, "Budi Santoso", "012", false},
-    {13, "Lia Paramita", "013", false},
-    {14, "Wayan Suparta", "014", false},
-    {15, "Eka Putri", "015", false},
-    {16, "Sandi Rahman", "016", false},
-    {17, "Jefri Makabraw", "017", false},
-    {18, "Ormala Pratiwi", "018", false},
-    {19, "Fitri Utama", "019", false},
-    {20, "Ahmad Rahman", "020", false},
-    {21, "Cahya Nugroho", "021", false},
-    {22, "Nadia Wijaya", "022", false},
-    {23, "Zulfikar Pratama", "023", false},
-    {24, "Indah Sari", "024", false},
-    {25, "Vella Simanjuntak", "025", false},
-    {26, "Gina Lestari", "026", false},
-    {27, "Usman Efendi", "027", false},
-    {28, "Maya Kusuma", "028", false},
-    {29, "Putra Wijaya", "029", false},
-    {30, "Xenia Hermawan", "030", false},
-    {31, "Eka Wardana", "031", false},
-    {32, "Karina Mustika", "032", false},
-    {33, "Taufan Hidayat", "033", false},
-    {34, "Dina Rahmawati", "034", false},
-    {35, "Siti Nurhaliza", "035", false},
-    {36, "Oki Pratama", "036", false},
-    {37, "Koko Suryanto", "037", false},
-    {38, "Vina Marlina", "038", false},
-    {39, "Agus Setiawan", "039", false},
-    {40, "Nur Azizah", "040", false},
-    {41, "Isa Yulianti", "041", false},
-    {42, "Fajar Pratama", "042", false},
-    {43, "Laksmi Handoko", "043", false},
-    {44, "Joko Supriyanto", "044", false},
-    {45, "Ulfa Ramadhani", "045", false},
-    {46, "Puri Handayani", "046", false},
-    {47, "Haris Wijaya", "047", false},
-    {48, "Rani Kusuma", "048", false},
-    {49, "Widi Harjanto", "049", false},
-    {50, "Zena Kusuma", "050", false}};
-int voterCount = 50;
+    // {11, "Gregorius Dedi", "011", false},
+    // {12, "Budi Santoso", "012", false},
+    // {13, "Lia Paramita", "013", false},
+    // {14, "Wayan Suparta", "014", false},
+    // {15, "Eka Putri", "015", false},
+    // {16, "Sandi Rahman", "016", false},
+    // {17, "Jefri Makabraw", "017", false},
+    // {18, "Ormala Pratiwi", "018", false},
+    // {19, "Fitri Utama", "019", false},
+    // {20, "Ahmad Rahman", "020", false},
+    // {21, "Cahya Nugroho", "021", false},
+    // {22, "Nadia Wijaya", "022", false},
+    // {23, "Zulfikar Pratama", "023", false},
+    // {24, "Indah Sari", "024", false},
+    // {25, "Vella Simanjuntak", "025", false},
+    // {26, "Gina Lestari", "026", false},
+    // {27, "Usman Efendi", "027", false},
+    // {28, "Maya Kusuma", "028", false},
+    // {29, "Putra Wijaya", "029", false},
+    // {30, "Xenia Hermawan", "030", false},
+    // {31, "Eka Wardana", "031", false},
+    // {32, "Karina Mustika", "032", false},
+    // {33, "Taufan Hidayat", "033", false},
+    // {34, "Dina Rahmawati", "034", false},
+    // {35, "Siti Nurhaliza", "035", false},
+    // {36, "Oki Pratama", "036", false},
+    // {37, "Koko Suryanto", "037", false},
+    // {38, "Vina Marlina", "038", false},
+    // {39, "Agus Setiawan", "039", false},
+    // {40, "Nur Azizah", "040", false},
+    // {41, "Isa Yulianti", "041", false},
+    // {42, "Fajar Pratama", "042", false},
+    // {43, "Laksmi Handoko", "043", false},
+    // {44, "Joko Supriyanto", "044", false},
+    // {45, "Ulfa Ramadhani", "045", false},
+    // {46, "Puri Handayani", "046", false},
+    // {47, "Haris Wijaya", "047", false},
+    // {48, "Rani Kusuma", "048", false},
+    // {49, "Widi Harjanto", "049", false},
+    // {50, "Zena Kusuma", "050", false}
+  };
+int voterCount = 10;
 
 // Votes Log Data
 VoteLog votesLog[MAX_VOTES];
@@ -457,11 +458,11 @@ private:
       return new VoterBSTNode(voterId, name, voterIdNumber, voted);
     }
 
-    if (name < node->name)
+    if (name < node->name || (name == node->name && voterIdNumber < node->voterIdNumber))
     {
       node->left = _insertNode(node->left, voterId, name, voterIdNumber, voted);
     }
-    else if (name > node->name)
+    else if (name > node->name || (name == node->name && voterIdNumber > node->voterIdNumber))
     {
       node->right = _insertNode(node->right, voterId, name, voterIdNumber, voted);
     }
@@ -587,6 +588,23 @@ private:
       return nullptr;
     }
   }
+public:
+  VoterBSTNode *searchVotedId(string voterIdNumber) {
+    return _searchVotedId(root, stoi(voterIdNumber));
+  }
+private:
+  VoterBSTNode* _searchVotedId(VoterBSTNode* node, int voterIdNumber) {
+    if (node == nullptr)
+      return nullptr;
+
+    if (voterIdNumber < node->voterId)
+      return _searchVotedId(node->left, voterIdNumber);
+    else if (voterIdNumber > node->voterId)
+      return _searchVotedId(node->right, voterIdNumber);
+    else
+      return node;
+  }
+
 
 public:
   void displayAll()
@@ -597,14 +615,18 @@ public:
   }
 
 private:
+// left root right
   void _displayInOrder(VoterBSTNode *node, int &counter)
   {
     if (node != nullptr)
     {
+      // traverse left
       _displayInOrder(node->left, counter);
+      // process node
       string status = node->voted ? "Sudah Voting" : "Belum Voting";
       cout << counter << ". " << node->name << " (" << node->voterIdNumber << ") - " << status << endl;
       counter++;
+      // traverse right
       _displayInOrder(node->right, counter);
     }
   }
@@ -654,6 +676,80 @@ private:
   }
 public:
   int getSize() { return size; }
+
+public:
+  void displayTree()
+  {
+    if (root == nullptr)
+    {
+      showMessage("BST kosong!");
+      return;
+    }
+
+    showMessage("\n========== VISUALISASI BST VOTER ==========");
+    showMessage("");
+    _printTree(root, "", true);
+    cout << "\nKeterangan:" << endl;
+    cout << "├── = Ada child di kiri/kanan" << endl;
+    cout << "└── = Child terakhir (leaf)" << endl;
+    cout << "[L] = Node memiliki child di LEFT" << endl;
+    cout << "[R] = Node memiliki child di RIGHT" << endl;
+    cout << "[LR] = Node memiliki child di LEFT dan RIGHT" << endl;
+    showMessage("");
+  }
+
+private:
+  void _printTree(VoterBSTNode *node, string prefix, bool isLast)
+  {
+    if (node == nullptr)
+      return;
+
+    // Tentukan simbol branch
+    string branch = isLast ? "└── " : "├── ";
+    string nodeInfo = "";
+
+    // Cek apakah ada child di kiri atau kanan
+    string childInfo = "";
+    if (node->left != nullptr && node->right != nullptr)
+    {
+      childInfo = "[LR]"; // Ada di left dan right
+    }
+    else if (node->left != nullptr)
+    {
+      childInfo = "[L]"; // Hanya ada di left
+    }
+    else if (node->right != nullptr)
+    {
+      childInfo = "[R]"; // Hanya ada di right
+    }
+    else
+    {
+      childInfo = "[LEAF]"; // Tidak ada child
+    }
+
+    // Status voting
+    string status = node->voted ? "✓" : "✗";
+
+    // Print node saat ini
+    cout << prefix << branch << node->name
+         << " (ID:" << node->voterId << ") "
+         << status << " " << childInfo << endl;
+
+    // Update prefix untuk subtree berikutnya
+    string newPrefix = prefix + (isLast ? "    " : "│   ");
+
+    // Print left subtree
+    if (node->left != nullptr)
+    {
+      _printTree(node->left, newPrefix, node->right == nullptr);
+    }
+
+    // Print right subtree
+    if (node->right != nullptr)
+    {
+      _printTree(node->right, newPrefix, true);
+    }
+  }
 };
 
 // ==================== STACK ====================
@@ -1215,8 +1311,12 @@ void manageVoter(VoterBST &voterBST)
       showMessage("─── Tambah Voter ───");
       string voterName = getInput("Nama voter: ");
       string voterId = getInput("ID/NIM: ");
-
-      if (voterCount < MAX_VOTERS)
+      VoterBSTNode *existingVoter = voterBST.searchVotedId(voterId);
+      if (existingVoter != nullptr)
+      {
+        showError("Voter dengan ID \"" + voterId + "\" sudah terdaftar!");
+      }
+      else if (voterCount < MAX_VOTERS)
       {
         voters[voterCount].id = voterCount + 1;
         voters[voterCount].name = voterName;
