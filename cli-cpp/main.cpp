@@ -767,6 +767,25 @@ class Queue {
 
   void enqueue(string voterName,string voterId, int candidateId, string candidateName) {
 
+    int voterIndex = -1;
+    for(int i = 0; i < voterCount; i++){
+      if(voters[i].name == voterName && voters[i].voterId == voterId){
+        voterIndex = i;
+        break;
+      }
+    }
+
+    if(voterIndex == -1){
+      showError("Voter tidak ditemukan!");
+      return;
+    }
+
+    if(voters[voterIndex].voted){
+      showError("Anda sudah melakukan voting!");
+      return;
+    }
+
+
     DataQueue* newNode = new DataQueue();
     newNode->voterName = voterName;
     newNode->voterId = voterId;
@@ -780,6 +799,10 @@ class Queue {
       belakang -> next = newNode;
       belakang = newNode;
   }
+  
+  voters[voterIndex].voted = true;
+
+  syncBSTVotedStatus(voterBST.root);
 }
 
  void dequeue(int input, LinkedList &voteLogList){
@@ -820,8 +843,6 @@ class Queue {
 
     if (voterIndex != -1 && candidateIndex != -1){
       candidates[candidateIndex].votes++;
-      voters[voterIndex].voted = true;
-      
       syncBSTVotedStatus(voterBST.root);
       voteStack.push(voterIndex, candidateIndex);
     }
